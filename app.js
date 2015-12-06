@@ -3,7 +3,8 @@
 var vlog = require('vlog').instance(__filename);
 var http = require('http');
 var token = 'p3WqgTyqearyMvSTsIK8Yqm4Z61RD1nL';
-var wechat = require('node-wechat')(token);
+var wechat = require('./lib/wechat')(token);
+var port = 16000;
 
 http.createServer(function (req, res) {
   //检验 token
@@ -50,4 +51,7 @@ http.createServer(function (req, res) {
 
   //监听所有信息
   //wechat.all(function (data) { ... });
-}).listen(16000);
+}).listen(port);
+
+vlog.log('wx started:%d',port);
+
