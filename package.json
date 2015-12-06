@@ -1,0 +1,32 @@
+{
+  "name": "wx",
+  "version": "0.1.1",
+  "description": "wx test project",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/keel/wx.git"
+  },
+  "dependencies": {
+    "express": "^4.13.3",
+    "ktool": "^0.2.1",
+    "wechat": "^2.0.3"
+  },
+  "devDependencies": {
+    "chai": "^2.3.0",
+    "rewire": "^2.3.3",
+    "mocha": "^2.2.5"
+  },
+  "keywords": [
+    "wx"
+  ],
+  "author": "keel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/keel/wx/issues"
+  },
+  "homepage": "https://github.com/keel/wx#readme"
+}

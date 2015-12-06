@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+*.log
+test.js
+.jshintrc
+node_modules/
+temp/
+public/
+dist/
+.deploy*/
