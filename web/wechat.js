@@ -23,7 +23,6 @@ var wxEncodingAESKey = '8xqiBiBoCo8NSkFBNfTxZ1RZhHTWzoFSq0mxDLzzfGz';
 
 var api = null; //new WechatAPI(config.appid, secret);
 var client = null; //new OAuth(config.appid, secret);
-var inited = false;
 
 var menu = {
   'button': [{
@@ -50,7 +49,7 @@ var init = function(callback) {
   var configArr = ['wxSecret', 'wxAppid', 'wxEncodingAESKey', 'wxToken'];
   cache.readConfig(configArr, function(err, re) {
     if (err) {
-      return callback(vlog.ee(err, 'init:readConfig'));
+      return vlog.eo(err, 'init:readConfig');
     }
     wxSecret = re.wxSecret;
     wxAppid = re.wxAppid;
@@ -58,37 +57,30 @@ var init = function(callback) {
     wxToken = re.wxToken;
     // config = re.config;
     vlog.log('wxAppid:%j,en:%j,wxToken:%j', wxAppid, wxEncodingAESKey, wxToken);
-    api = new WechatAPI(wxAppid, wxSecret);
-    client = new OAuth(wxAppid, wxSecret);
-    api.getMenu(function(err, re) {
-      if (err) {
-        vlog.eo(err, 'api.getMenu');
-        api.createMenu(menu, function(err) {
-          if (err) {
-            return vlog.eo(err, 'api.createMenu');
-          }
-          vlog.log('menu created:%j', menu);
-        });
-      }
-      vlog.log('getMenu:%j', re);
-    });
-    inited = true;
+    // client = new OAuth(wxAppid, wxSecret);
+    if (!callback) {
+      return;
+    }
     callback(null, re);
   });
 };
 
-
+init();
 
 var createWX = function() {
-  if (!inited) {
-    init(function(err) {
-      if (err) {
-        vlog.error(err);
-        return null;
-      }
-      return createWX();
-    });
-  }
+  api = new WechatAPI(wxAppid, wxSecret);
+  api.getMenu(function(err, re) {
+    if (err) {
+      vlog.eo(err, 'api.getMenu');
+      api.createMenu(menu, function(err) {
+        if (err) {
+          return vlog.eo(err, 'api.createMenu');
+        }
+        vlog.log('menu created:%j', menu);
+      });
+    }
+    vlog.log('getMenu:%j', re);
+  });
   return wechat(wxToken, wechat.text(function(message, req, res, next) {
     // message为文本内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -99,7 +91,11 @@ var createWX = function() {
     // MsgId: '5837397576500011341' }
     res.reply('欢迎欢迎!');
   }).image(function(message, req, res, next) {
-    handlePic.handle(message, req, res);
+    handlePic.handle(message, req, res, function(err) {
+      if (err) {
+        vlog.eo(err, 'handlePic:' + message);
+      }
+    });
   }).event(function(message, req, res, next) {
     // message为事件内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -212,10 +208,13 @@ var createWX = function() {
 
 };
 
+var createClient = function() {
+  return new OAuth(wxAppid, wxSecret);
+};
 
+// var wx = createWX();
+// var oauthClient = createClient();
 
-var wx = createWX();
-
-
-exports.wx = wx;
-exports.oauthClient = client;
+exports.init = init;
+exports.wx = createWX();
+exports.oauthClient = createClient();

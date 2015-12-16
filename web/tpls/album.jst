@@ -9,28 +9,11 @@
   <!-- 处理选取图片 -->
   <div class="kixbw">
     <ul class="comeul">
-      <li><img src="image/u26.png" class="updw"></li>
-      <li id="it">
-        <div class="ft"><img src="image/u18.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
-      </li>
-      <li id="it">
-        <div class="ft"><img src="image/u22.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
-      </li>
-      <li id="it">
-        <div class="ft"><img src="image/u14.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
-      </li>
-      <li id="it">
-        <div class="ft"><img src="image/u18.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
-      </li>
-      <li id="it">
-        <div class="ft"><img src="image/u22.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
-      </li>
-      <li id="it">
-        <div class="ft"><img src="image/u14.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
-      </li>
-      <li id="it">
-        <div class="ft"><img src="image/u18.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
-      </li>
+
+    {{~ it.user.pics :pic}}
+      <li><div class="ft"><img src="{{=pic.url}}" alt="" class="check" /><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"</div></li>
+    {{~}}
+
     </ul>
   </div>
   <div class="masd">

@@ -51,12 +51,15 @@ var findPics = function(uid, callback) {
   });
 };
 
-var addPic = function(uid, picUrl, callback) {
-  var id = new db.OID();
+var addPic = function(uid, picUrl, picId, openId, wxUrl, createTime, callback) {
+  var id = picId || new db.OID();
   var newPic = {
     '_id': id,
     'uid': uid,
-    'url': picUrl
+    'url': picUrl,
+    'openId': openId || '',
+    'wxUrl': wxUrl || '',
+    'createTime': createTime || (new Date()).getTime()
   };
   db.insertOne(picTable, newPic, function(err, re) {
     if (err) {
@@ -66,8 +69,29 @@ var addPic = function(uid, picUrl, callback) {
   });
 };
 
-var addUser = function(openId, callback) {
-  var oid = new db.OID();
+var userAddPic = function(openId, picUrl, picId, wxUrl, createTime, callback) {
+  db.findOne(userTable, {
+    'openId': openId
+  }, function(err, re) {
+    if (err) {
+      return callback(vlog.ee(err, 'userAddPic.findUser:' + openId));
+    }
+    var uid = null;
+    if (!re) {
+      uid = new db.OID();
+      addUser(openId, uid, function(err) {
+        if (err) {
+          return callback(vlog.ee(err, 'userAddPic.addUser'));
+        }
+      });
+    }
+    uid = re._id;
+    addPic(uid, picUrl, picId, openId, wxUrl, createTime, callback);
+  });
+};
+
+var addUser = function(openId, uid, callback) {
+  var oid = uid || new db.OID();
   var now = (new Date()).getTime();
   var user = {
     '_id': oid,
@@ -103,7 +127,7 @@ var checkUserPics = function(openId, callback) {
         callback(null, re);
       });
     } else {
-      addUser(openId, function(err, re) {
+      addUser(openId, null, function(err, re) {
         if (err) {
           return callback(vlog.ee(err, 'checkUserPics.addUser'));
         }
@@ -120,19 +144,20 @@ exports.addPic = addPic;
 exports.findUser = findUser;
 exports.checkUserPics = checkUserPics;
 exports.findPics = findPics;
+exports.userAddPic = userAddPic;
 
 // var id = '5670011f19ba08ac03c082dc';
 
 // vlog.log(new Date().getTime());
 // vlog.log(require('ktool').randomStr(64,'0123456789'));
 
-// findUser('testOpen',function (err,re) {
+// findPics('5670011f19ba08ac03c082dc',function (err,re) {
 //   if (err) {
 //     return vlog.ee(err);
 //   }
 //   vlog.log('re:%j',re);
 // });
-//
+
 // addPic(id,'http://testurl2',function (err,re) {
 //   if (err) {
 //     return vlog.ee(err);
