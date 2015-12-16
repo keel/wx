@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="cache-control" content="no-cache">
+		<meta http-equiv="expires" content="0">
+		<link rel="stylesheet" href="css/style.css">
+		<script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+		<title>手机相册</title>
+	</head>
+
+	<body class="xce">
+		<!-- 顶部 -->
+		<div class="topList">
+			您本月可以免费冲印<b style="color:red">3</b>张照片
+			<br />
+			<a href="tishi.html" class="xad">如何获得更多的冲印张数，去瞧瞧>></a>
+		</div>
+
+		<!-- 处理选取图片 -->
+
+		<script type="text/javascript">
+			$(function() {
+				$(".check").click(function() {
+					if ($(this).next().attr("src") === "image/u42.png") {
+						$(this).next().attr("src", "image/u38.png");
+					} else {
+						$(this).next().attr("src", "image/u42.png");
+					}
+				});
+				$(".de").click(function() {
+					$(this).parent().remove();
+				});
+				$(".dwList").click(function() {
+					$(".masd").show();
+					$('html,body').animate({scrollTop: '0px'}, 50);
+					$(".masd").bind("touchmove",function(e){  
+                e.preventDefault();  
+        				});
+				});
+				
+				$(".mask2").click(function() {
+					$(".masd").hide();
+				});
+			});
+		</script>
+
+		<div class="kixbw">
+			<ul class="comeul">
+				<li><img src="image/u26.png" class="updw"></li>
+				<li id="it">
+					<div class="ft"><img src="image/u18.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
+				</li>
+				<li id="it">
+					<div class="ft"><img src="image/u22.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
+				</li>
+				<li id="it">
+					<div class="ft"><img src="image/u14.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
+				</li>
+				<li id="it">
+					<div class="ft"><img src="image/u18.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
+				</li>
+				<li id="it">
+					<div class="ft"><img src="image/u22.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
+				</li>
+				<li id="it">
+					<div class="ft"><img src="image/u14.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
+				</li>
+				<li id="it">
+					<div class="ft"><img src="image/u18.png" class="check"><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"></div>
+				</li>
+			</ul>
+		</div>
+
+		<div class="masd">
+			<div class="mask2"></div>
+			<div class="res">
+				<div class="tet">
+					<p>温馨提示</p>
+				</div>
+				<div class="cont">亲，您本月只能免费冲印3张照片哦！
+					<br />
+					<a href="tishi.html" class="xad">如何获得更多的冲印张数，去瞧瞧>></a></div>
+			</div>
+		</div>
+
+		<!-- 图片选取删除 end！ -->
+
+		<!-- 尾部 -->
+		<div class="dwList">一键冲印</div>
+	</body>
+
+</html>

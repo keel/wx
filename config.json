@@ -1,6 +1,10 @@
 {
-	"redisIP": "127.0.0.1",
-	"redisPort": 16379,
-	"wxPort":18000,
-	"mongoUrl": "mongodb://keel:jsLy_0107@127.0.0.1:27017/lysms"
+  "redisIP": "127.0.0.1",
+  "redisPort": 16379,
+  "wxPort": 16000,
+  "mongoUrl": "mongodb://keel:jsLy_0107@127.0.0.1:27017/lysms",
+  "wxSecret": "d4624c36b6795d1d99dcf0547af5443d",
+  "wxToken": "p3WqgTyqearyMvSTsIK8Yqm4Z61RD1nL",
+  "wxAppid": "wx6194409e72790731",
+  "wxEncodingAESKey": "8xqiBiBoCo8NSkFBNfTxZ1RZhHTWzoFSq0mxDLzzfGz"
 }

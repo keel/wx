@@ -11,12 +11,16 @@
     "url": "git+ssh://git@github.com/keel/wx.git"
   },
   "dependencies": {
+    "body-parser": "^1.14.1",
+    "dot": "^1.0.3",
     "express": "^4.13.3",
     "hiredis": "^0.4.1",
     "ktool": "^0.2.1",
     "mongodb": "^2.1.1",
     "redis": "^2.4.2",
-    "wechat": "^2.0.3"
+    "wechat": "^2.0.3",
+    "wechat-api": "^1.22.0",
+    "wechat-oauth": "^1.1.0"
   },
   "devDependencies": {
     "chai": "^2.3.0",
