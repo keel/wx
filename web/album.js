@@ -17,7 +17,7 @@ var client = require('./wechat').oauthClient;
 
 
 router.get('*', function(req, resp, next) {
-  vlog.log('req.query:%j,%j', req.query,req.query.code);
+  // vlog.log('req.query:%j,%j', req.query,req.query.code);
   var code = req.query.code;
   if (!code) {
     resp.status(403).send(error.json('auth'));

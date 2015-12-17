@@ -1,0 +1,82 @@
+﻿
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+
+	<body background="printbg.jpg">
+		<embed style="position:absolute; top:588px;left:206px" src="http://wx.loyoo.co/print/acy.mp4" ShowTracker="false" ShowStatusBar="false" ShowPositionControls="false" ShowAudioControls="false" autostart="true" loop="true" width="822" height="488" />
+		<div id="num" style="font-style:italic;font-family:arial;font-size: 65px;text-align: center;top:66px;left:1747px;background-color:#8d5b19;color:white;position:absolute;width:110px;height:70px">12</div>
+		<table style="text-align:center;background-color:#f2f2ed;position:absolute; top:588px;left:1070px;width:642px;height:462px">
+			<tr>
+				<td id="img"></td>
+			</tr>
+		</table>
+		<script src="http://wx.loyoo.co/passport/js/jquery-1.10.2.min.js"></script>
+		<script>
+			var printing = false;
+
+			setInterval("loop()", 5000);
+
+			function print (id,picUrl) {
+				xy = get_random();
+				window.external.print(id, picUrl.replace('tb__','')); //调用打印
+				$("#img").append('<img style="position:absolute; top:' + xy.y + 'px; left:' + xy.x + 'px;" width="152px" height="220px" src="' + picUrl + '" />');
+				printing = false;
+			}
+			function loop() {
+				if (printing) {
+					return;
+				}
+				printing = true;
+				$.getJSON("print?mid=" + getQueryString('num') + "&ran=" + Math.random(), function(re) {
+					if (re === 'null') {
+						return;
+					}
+					print(1,re);
+					loop();
+				}).error(function(err) {
+					printing = false;
+				});
+
+			}
+
+			function xy() {
+				this.x;
+				this.y;
+			}
+			var xy = new xy();
+
+			function get_random() {
+				var picture_x;
+				var picture_y;
+				//top:588px;left:1070px;width:642px;height:462px;
+				var picture_width = 152;
+				var picture_height = 220;
+				var table_width = 642;
+				var table_height = 462;
+				var x_max = 642 - 152;
+				var x_min = 0;
+				var y_max = 462 - 220;
+				var y_min = 0;
+				picture_x = Math.floor(x_min + Math.random() * (x_max - x_min));
+				picture_y = Math.floor(y_min + Math.random() * (y_max - y_min));
+				xy.x = picture_x;
+				xy.y = picture_y;
+				return xy;
+			}
+			$("#num").html(getQueryString('num'));
+			function getQueryString(name) {
+				//获取url参数
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				if (r != null) return unescape(r[2]);
+				return null;
+			}
+		</script>
+	</body>
+
+</html>

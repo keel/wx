@@ -26,13 +26,13 @@ var handle = function(message, req, res, callback) {
   // PicUrl: 'http://mmsns.qpic.cn/mmsns/bfc815ygvIWcaaZlEXJV7NzhmA3Y2fc4eBOxLjpPI60Q1Q6ibYicwg/0',
   // MediaId: 'media_id',
   // MsgId: '5837397301622104395' }
-  vlog.log('msg:%j',message);
+  // vlog.log('msg:%j', message);
   //先保存图片到本地目录,通过nginx可以访问到
   var picName = message.MsgId + '.jpg';
   var tb_picName = 'tb__' + picName;
   var dir = picDirPre + message.FromUserName + '/';
   //保存图片URL到数据库
-  db.userAddPic(message.FromUserName, picDownPre + tb_picName, message.MsgId, message.PicUrl, message.CreateTime, function(err) {
+  db.userAddPic(message.FromUserName, picDownPre + message.FromUserName + '/' + tb_picName, message.MsgId, message.PicUrl, message.CreateTime, function(err) {
     if (err) {
       res.reply(errTxt);
       return callback(vlog.ee(err, 'handle. userAddPic:' + message));
@@ -42,17 +42,17 @@ var handle = function(message, req, res, callback) {
     try {
       fs.statSync(dir);
     } catch (e) {
-      try{
+      try {
         fs.mkdirSync(dir);
-      }catch(e1){
-        return callback(vlog.ee(e1,'mkdirSync'));
+      } catch (e1) {
+        return callback(vlog.ee(e1, 'mkdirSync'));
       }
     }
     download.download(message.PicUrl, dir, picName, function(err, re) {
       if (err) {
         return callback(vlog.ee(err, 'download'));
       }
-      vlog.log('download done:%j', re);
+      // vlog.log('download done:%j', re);
       gm(dir + picName).resize(110, 140, '!').write(dir + tb_picName, function(err) {
         if (err) {
           return callback(vlog.ee(err, 'resize'));

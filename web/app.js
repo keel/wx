@@ -8,7 +8,11 @@ var vlog = require('vlog').instance(__filename);
 var wechat = require('./wechat');
 var album = require('./album');
 var albumre = require('./albumRedirect');
-
+var delPic = require('./delPic');
+var print = require('./print');
+var cy = require('./cy');
+var cyz = require('./cyz');
+var album2 = require('./album2');
 
 app.use(express.static(__dirname + '/public', {
   'maxAge': '1d'
@@ -17,8 +21,13 @@ app.use(express.static(__dirname + '/public', {
 
 // app.use('/login', login.router);
 // app.get('/logout', auth.logout);
+app.use('/album2', album2.router);
+app.use('/cyz', cyz.router);
+app.use('/cy', cy.router);
+app.use('/print', print.router);
 app.use('/albumre', albumre.router);
 app.use('/album', album.router);
+app.use('/delPic', delPic.router);
 app.use('/', wechat.wx);
 
 app.use(function(err, req, res, next) {

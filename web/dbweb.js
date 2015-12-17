@@ -1,6 +1,6 @@
 'use strict';
 var db = require('./../lib/db');
-// var cache = require('/../lib/cache');
+var cache = require('./../lib/cache');
 var vlog = require('vlog').instance(__filename);
 var userTable = 'wxUser';
 // var albumTable = 'album';
@@ -137,6 +137,47 @@ var checkUserPics = function(openId, callback) {
   });
 };
 
+var delPic = function(picId, callback) {
+  db.update(picTable, {
+    '_id': picId
+  }, {
+    '$set': {
+      'state': -1
+    }
+  }, null, function(err, re) {
+    if (err) {
+      callback(vlog.ee(err, 'delPic'));
+      return;
+    }
+    callback(null, re);
+  });
+};
+
+var redisPrintTaskKeyPre = 'wx:printpics';
+
+var addPrintPics = function(cypics, mid, callback) {
+  var pics = cypics.split('-');
+  // for (var i = 0; i < pics.length; i++) {
+  //   pics[i] = pics[i].replace('tb__', '');
+  // }
+  db.pushToCache(redisPrintTaskKeyPre + ':' + mid, pics, function(err, re) {
+    if (err) {
+      callback(vlog.ee(err, 'pushToCache:' + cypics));
+      return;
+    }
+    callback(null, re);
+  });
+};
+
+var getPrintPic = function(mid, callback) {
+  db.popFromCache(redisPrintTaskKeyPre + ':' + mid, function(err, re) {
+    if (err) {
+      callback(vlog.ee(err, 'popFromCache'));
+      return;
+    }
+    callback(null, re);
+  });
+};
 
 exports.bindUser = bindUser;
 exports.addUser = addUser;
@@ -145,6 +186,9 @@ exports.findUser = findUser;
 exports.checkUserPics = checkUserPics;
 exports.findPics = findPics;
 exports.userAddPic = userAddPic;
+exports.delPic = delPic;
+exports.addPrintPics = addPrintPics;
+exports.getPrintPic = getPrintPic;
 
 // var id = '5670011f19ba08ac03c082dc';
 

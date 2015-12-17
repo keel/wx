@@ -2,61 +2,118 @@
 <div class="xce">
   <!-- 顶部 -->
   <div class="topList">
-    您本月可以免费冲印<b style="color:red">{{=it.user.wxPoint}}</b>张照片
-    <br />
-    <a href="tishi" class="xad">如何获得更多的冲印张数，去瞧瞧>></a>
+    {{if(it.user.orderTime == 0)}}
+      您本月可以免费冲印
+      <b style="color:red" id="wxpoint">
+      {{=it.user.wxPoint}}</b>张照片
+      <br />
+      <a href="getPoint" class="xad">如何获得更多的冲印张数，去瞧瞧>></a>
+    {{ }else{ }} 您本月还可以冲印
+      <b style="color:red">{{=it.user.wxPoint}}</b>张照片
+    {{ } }}
   </div>
   <!-- 处理选取图片 -->
   <div class="kixbw">
     <ul class="comeul">
-
-    {{~ it.user.pics :pic}}
-      <li><div class="ft"><img src="{{=pic.url}}" alt="" class="check" /><img class="imga1" src="image/u38.png" /><img src="image/u36.png" class="de"</div></li>
-    {{~}}
-
+      {{~ it.user.pics :pic}}
+      <li>
+        <div class="ft"><img src="{{=pic.url}}" alt="" id="{{=pic._id}}" class="check" /><img class="imga1" src="image/notchoose.png" /><img src="image/delete.png" class="de" </div></li>
+      {{~}}
     </ul>
-  </div>
-  <div class="masd">
-    <div class="mask2"></div>
-    <div class="res">
-      <div class="tet">
-        <p>温馨提示</p>
-      </div>
-      <div class="cont">亲，您本月只能免费冲印3张照片哦！
-        <br />
-        <a href="tishi" class="xad">如何获得更多的冲印张数，去瞧瞧>></a></div>
     </div>
+    <div class="masd">
+      <div class="mask2"></div>
+      <div class="res">
+        <div class="tet">
+          <p>温馨提示</p>
+        </div>
+        <div class="cont">亲，您目前只能冲印{{=it.user.wxPoint}}张照片哦！
+          <br />
+          <a href="getPoint" class="xad">如何获得更多的冲印张数，去瞧瞧>></a></div>
+      </div>
+    </div>
+    <!-- 图片选取删除 end！ -->
+    <!-- 尾部 -->
+    <form action="cy" method="post" name="cyForm" id="cyForm" class="hide"><input type="hide" id="cypics" name="cypics" value=""></form>
+    <div class="dwList" id="cy">一键冲印</div>
   </div>
-  <!-- 图片选取删除 end！ -->
-  <!-- 尾部 -->
-  <div class="dwList">一键冲印</div>
-</div>
-<script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-<script type="text/javascript">
-$(function() {
-  $(".check").click(function() {
-    if ($(this).next().attr("src") === "image/u42.png") {
-      $(this).next().attr("src", "image/u38.png");
-    } else {
-      $(this).next().attr("src", "image/u42.png");
-    }
-  });
-  $(".de").click(function() {
-    $(this).parent().remove();
-  });
-  $(".dwList").click(function() {
-    $(".masd").show();
-    $('html,body').animate({
-      scrollTop: '0px'
-    }, 50);
-    $(".masd").bind("touchmove", function(e) {
-      e.preventDefault();
+  <script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+  <script type="text/javascript">
+  $(function() {
+
+    var chooseLimit = function() {
+      $(".masd").show();
+      $('html,body').animate({
+        scrollTop: '0px'
+      }, 50);
+      $(".masd").bind("touchmove", function(e) {
+        e.preventDefault();
+      });
+    };
+
+    var choosed = {};
+    var choosedNum = 0;
+
+    var unChoosePic = function(target) {
+      $(target).next().attr("src", "image/notchoose.png");
+      if (choosed[picUrl] === true) {
+        choosed[picUrl] = false;
+      }
+      if (choosedNum>0) {
+        choosedNum--;
+      }
+    };
+
+    var choosePic = function(target) {
+      if (choosedNum+1 >  {{=it.user.wxPoint}} ) {
+        chooseLimit();
+        return false;
+      }
+      choosed[picUrl] = true;
+      $(target).next().attr("src", "image/choose.png");
+      choosedNum++;
+    };
+    var chooseClick = function(target) {
+      var picUrl = $(target).next().attr("src");
+      if (picUrl === "image/choose.png") {
+        unChoosePic(target);
+      } else {
+        choosePic(target);
+      }
+    };
+
+    var delPic = function(target) {
+      var pid = $(target).attr('id');
+      var r = confirm("确定要删除这张图片吗?");
+      if (r) {
+        $.post('delPic', {
+          'pid': pid
+        }, function() {
+          $(this).parent().remove();
+        }).error(function() {
+          alert('删除失败,请稍后再试');
+        });
+      }
+    };
+
+    $(".check").click(chooseClick(this));
+
+    $(".de").click(delPic(this));
+
+    $(".dwList").click(function() {
+      var cc = '';
+      for (var i in choosed) {
+        if (choosed.i === true) {
+          cc += (i + '-');
+        }
+      }
+      $('#cypics').val(cc);
+      $('#cyForm').submit();
+    });
+
+    $(".mask2").click(function() {
+      $(".masd").hide();
     });
   });
-
-  $(".mask2").click(function() {
-    $(".masd").hide();
-  });
-});
-</script>
-{{#def.footer}}
+  </script>
+  {{#def.footer}}
