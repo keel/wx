@@ -34,7 +34,7 @@
     </div>
     <!-- 图片选取删除 end！ -->
     <!-- 尾部 -->
-    <form action="cy" method="post" name="cyForm" id="cyForm" class="hide"><input type="hide" id="cypics" name="cypics" value=""></form>
+    <form action="cy" method="post" name="cyForm" id="cyForm" class="hide"><input type="hidden" id="cypics" name="cypics" value=""></form>
     <div class="dwList" id="cy">一键冲印</div>
   </div>
   <script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
@@ -84,13 +84,15 @@
     };
 
     var delPic = function(target) {
-      var pid = $(target).attr('id');
+      var t = $(target).prev().prev();
+      var pid = t.attr('id');
       var r = confirm("确定要删除这张图片吗?");
       if (r) {
         $.post('delPic', {
           'pid': pid
         }, function() {
-          $(this).parent().remove();
+          $(target).parent().remove();
+          choosed[t.attr('src')] = 'false';
         }).error(function() {
           alert('删除失败,请稍后再试');
         });

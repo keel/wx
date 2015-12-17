@@ -21,10 +21,11 @@
 
 			setInterval("loop()", 5000);
 
-			function print (id,picUrl) {
+			function printWX (id,picUrl) {
 				xy = get_random();
-				window.external.print(id, picUrl.replace('tb__','')); //调用打印
+				var big = picUrl.replace('tb__','');
 				$("#img").append('<img style="position:absolute; top:' + xy.y + 'px; left:' + xy.x + 'px;" width="152px" height="220px" src="' + picUrl + '" />');
+				window.external.print(id,big ); //调用打印
 				printing = false;
 			}
 			function loop() {
@@ -32,11 +33,12 @@
 					return;
 				}
 				printing = true;
-				$.getJSON("print?mid=" + getQueryString('num') + "&ran=" + Math.random(), function(re) {
-					if (re === 'null') {
+				$.get("print?mid=" + getQueryString('num') + "&ran=" + Math.random(), function(re) {
+					if (re+'' === 'null') {
+						printing = false;
 						return;
 					}
-					print(1,re);
+					printWX(1,re);
 					loop();
 				}).error(function(err) {
 					printing = false;

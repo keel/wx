@@ -4,7 +4,7 @@ var cache = require('./../lib/cache');
 var vlog = require('vlog').instance(__filename);
 var userTable = 'wxUser';
 // var albumTable = 'album';
-var picTable = 'pic';
+var picTable = 'wxPic';
 
 var bindUser = function(openId, phone, point, callback) {
   db.findOneAndUpdate(userTable, {
@@ -40,7 +40,10 @@ var findUser = function(openId, callback) {
 
 var findPics = function(uid, callback) {
   db.query(picTable, {
-    'uid': uid
+    'uid': uid,
+    'state': {
+      '$gte': 0
+    }
   }, {
     'createTime': -1
   }, 0, 50, function(err, re) {
@@ -59,6 +62,7 @@ var addPic = function(uid, picUrl, picId, openId, wxUrl, createTime, callback) {
     'url': picUrl,
     'openId': openId || '',
     'wxUrl': wxUrl || '',
+    'state': 0,
     'createTime': createTime || (new Date()).getTime()
   };
   db.insertOne(picTable, newPic, function(err, re) {
@@ -156,8 +160,7 @@ var delPic = function(picId, callback) {
 var redisPrintTaskKeyPre = 'wx:printpics';
 
 var addPrintPics = function(cypics, mid, callback) {
-  var pics = cypics.substring(0,cypics.length-1).split('-');
-  vlog.log('pics:%j',pics);
+  var pics = cypics.substring(0, cypics.length - 1).split('-');
   // for (var i = 0; i < pics.length; i++) {
   //   pics[i] = pics[i].replace('tb__', '');
   // }
@@ -166,6 +169,7 @@ var addPrintPics = function(cypics, mid, callback) {
       callback(vlog.ee(err, 'pushToCache:' + cypics));
       return;
     }
+    // vlog.log('push:%j,key:%j', pics, redisPrintTaskKeyPre + ':' + mid);
     callback(null, re);
   });
 };
@@ -176,6 +180,7 @@ var getPrintPic = function(mid, callback) {
       callback(vlog.ee(err, 'popFromCache'));
       return;
     }
+    // vlog.log('pop:%j', re);
     callback(null, re);
   });
 };
@@ -190,6 +195,23 @@ exports.userAddPic = userAddPic;
 exports.delPic = delPic;
 exports.addPrintPics = addPrintPics;
 exports.getPrintPic = getPrintPic;
+
+// var pp = 'http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6229194685600710599.jpg-http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6229194591111430077.jpg';
+// var mm = 23;
+// addPrintPics(pp,mm,function(err, re) {
+//   if (err) {
+//     vlog.eo(err); return;
+//   }
+//   vlog.log('add re:%j',re);
+
+// });
+// getPrintPic(mm, function(err, re) {
+//   if (err) {
+//     vlog.eo(err);
+//     return;
+//   }
+//   vlog.log('pop re:%j', re);
+// });
 
 // var id = '5670011f19ba08ac03c082dc';
 

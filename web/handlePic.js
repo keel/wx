@@ -53,7 +53,7 @@ var handle = function(message, req, res, callback) {
         return callback(vlog.ee(err, 'download'));
       }
       // vlog.log('download done:%j', re);
-      gm(dir + picName).resize(110, 140, '!').write(dir + tb_picName, function(err) {
+      gm(dir + picName).resizeExact(110, 140).write(dir + tb_picName, function(err) {
         if (err) {
           return callback(vlog.ee(err, 'resize'));
         }

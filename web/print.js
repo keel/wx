@@ -9,20 +9,22 @@ var router = express.Router();
 var db = require('./dbweb');
 var vlog = require('vlog').instance(__filename);
 
-var redisPrintTaskKeyPre = 'wx:printpics';
 
 router.get('*', function(req, resp, next) {
   // vlog.log('req headers:%j',req.headers);
+  // vlog.log('print mid:%j',req.query.mid);
   if (!req.query.mid) {
     resp.status(403).send(error.json('params'));
     return;
   }
-  db.getPrintPic(redisPrintTaskKeyPre + ':' + req.query.mid, function(err, re) {
+  db.getPrintPic(req.query.mid, function(err, re) {
     if (err) {
       vlog.eo(err, 'getPrintPic');
       return;
     }
-    resp.status(200).send(re);
+    var out = re || 'null';
+    // vlog.log('print will re:%j,out:%j',re,out);
+    resp.status(200).send(out);
   });
 });
 
