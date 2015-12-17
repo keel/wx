@@ -2,7 +2,7 @@
 <div class="xce">
   <!-- 顶部 -->
   <div class="topList">
-    {{if(it.user.orderTime == 0)}}
+    {{ if(it.user.orderTime == 0){ }}
       您本月可以免费冲印
       <b style="color:red" id="wxpoint">
       {{=it.user.wxPoint}}</b>张照片
@@ -15,7 +15,7 @@
   <!-- 处理选取图片 -->
   <div class="kixbw">
     <ul class="comeul">
-      {{~ it.user.pics :pic}}
+      {{~ it.user.pics:pic}}
       <li>
         <div class="ft"><img src="{{=pic.url}}" alt="" id="{{=pic._id}}" class="check" /><img class="imga1" src="image/notchoose.png" /><img src="image/delete.png" class="de" </div></li>
       {{~}}
@@ -54,31 +54,32 @@
     var choosed = {};
     var choosedNum = 0;
 
-    var unChoosePic = function(target) {
+    var unChoosePic = function(target,picUrl) {
       $(target).next().attr("src", "image/notchoose.png");
-      if (choosed[picUrl] === true) {
-        choosed[picUrl] = false;
+      if (choosed[picUrl] === 'true') {
+        choosed[picUrl] = 'false';
       }
       if (choosedNum>0) {
         choosedNum--;
       }
     };
 
-    var choosePic = function(target) {
+    var choosePic = function(target,picUrl) {
       if (choosedNum+1 >  {{=it.user.wxPoint}} ) {
         chooseLimit();
         return false;
       }
-      choosed[picUrl] = true;
+      choosed[picUrl] = 'true';
       $(target).next().attr("src", "image/choose.png");
       choosedNum++;
     };
     var chooseClick = function(target) {
       var picUrl = $(target).next().attr("src");
+      var pic = $(target).attr("src");
       if (picUrl === "image/choose.png") {
-        unChoosePic(target);
+        unChoosePic(target,pic);
       } else {
-        choosePic(target);
+        choosePic(target,pic);
       }
     };
 
@@ -96,14 +97,18 @@
       }
     };
 
-    $(".check").click(chooseClick(this));
+    $(".check").click(function() {
+      chooseClick(this);
+    });
 
-    $(".de").click(delPic(this));
+    $(".de").click(function () {
+      delPic(this);
+    });
 
     $(".dwList").click(function() {
       var cc = '';
       for (var i in choosed) {
-        if (choosed.i === true) {
+        if (choosed[i] === 'true') {
           cc += (i + '-');
         }
       }
