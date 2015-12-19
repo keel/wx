@@ -13,14 +13,19 @@ var print = require('./print');
 var cy = require('./cy');
 var cyz = require('./cyz');
 var album2 = require('./album2');
+var bind = require('./bind');
+var order = require('./order');
 
 app.use(express.static(__dirname + '/public', {
   'maxAge': '1d'
 }));
 
 
+
 // app.use('/login', login.router);
 // app.get('/logout', auth.logout);
+app.use('/order', order.router);
+app.use('/bind', bind.router);
 app.use('/album2', album2.router);
 app.use('/cyz', cyz.router);
 app.use('/cy', cy.router);

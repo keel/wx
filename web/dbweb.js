@@ -1,3 +1,11 @@
+/*
+user.state:
+0: 关注
+-1: 取消关注
+1: 已订购
+2: 取消订购
+ */
+
 'use strict';
 var db = require('./../lib/db');
 var cache = require('./../lib/cache');
@@ -5,16 +13,16 @@ var vlog = require('vlog').instance(__filename);
 var userTable = 'wxUser';
 // var albumTable = 'album';
 var picTable = 'wxPic';
+var orderTable = 'orderRelation';
 
-var bindUser = function(openId, phone, point, callback) {
+var orderProductID = '135000000000000228468';
+
+var bindUser = function(openId, phone, callback) {
   db.findOneAndUpdate(userTable, {
       'openId': openId
     }, {
       '$set': {
         'phone': phone
-      },
-      '$inc': {
-        'wxPoint': point
       }
     }, {
       returnOriginal: false
@@ -22,6 +30,16 @@ var bindUser = function(openId, phone, point, callback) {
     function(err, re) {
       if (err) {
         return callback(vlog.ee(err, 'bindUser:' + openId + ',' + phone));
+      }
+      if (!re) {
+        addUser(openId, null, phone, function(err, re) {
+          if (err) {
+            callback(vlog.ee(err, 'bindUser'));
+            return;
+          }
+          callback(null, re);
+        });
+        return;
       }
       callback(null, re);
     });
@@ -96,7 +114,7 @@ var userAddPic = function(openId, picUrl, picId, wxUrl, createTime, callback) {
     var uid = null;
     if (!re) {
       uid = new db.OID();
-      addUser(openId, uid, function(err) {
+      addUser(openId, uid, null, function(err) {
         if (err) {
           return callback(vlog.ee(err, 'userAddPic.addUser'));
         }
@@ -109,7 +127,7 @@ var userAddPic = function(openId, picUrl, picId, wxUrl, createTime, callback) {
   });
 };
 
-var addUser = function(openId, uid, callback) {
+var addUser = function(openId, uid, phone, callback) {
   var oid = uid || new db.OID();
   var now = (new Date()).getTime();
   var user = {
@@ -117,7 +135,7 @@ var addUser = function(openId, uid, callback) {
     'openId': openId,
     'createTime': now,
     'state': 0,
-    'phone': '',
+    'phone': phone || '',
     'orderTime': 0,
     'exitTime': 0,
     'wxPoint': 3
@@ -132,14 +150,22 @@ var addUser = function(openId, uid, callback) {
   });
 };
 
-var updateUserPoint = function(openId, addPoint, callback) {
-  db.update(userTable, {
+var addUserPoint = function(openId, addPoint, orderTime, callback) {
+  var update = {
     '$inc': {
       'wxPoint': addPoint
     }
-  }, function(err, re) {
+  };
+  if (orderTime) {
+    update['$set'] = {
+      'orderTime': orderTime
+    };
+  }
+  db.update(userTable, {
+    'openId': openId
+  }, update, function(err, re) {
     if (err) {
-      callback(vlog.ee(err, 'updateUserPoint'));
+      callback(vlog.ee(err, 'addUserPoint'));
       return;
     }
     callback(null, re);
@@ -173,7 +199,7 @@ var subUser = function(openId, callback) {
         'openId': openId
       }, {
         '$set': {
-          state: 0
+          'state': 0
         }
       }, function(err, re) {
         if (err) {
@@ -183,26 +209,63 @@ var subUser = function(openId, callback) {
         callback(null, re);
       });
     } else {
-      addUser(openId, null, callback);
+      addUser(openId, null, null, callback);
     }
+  });
+};
+
+var checkOrder = function(phone, callback) {
+  db.findOne(orderTable, {
+    'productID': orderProductID,
+    'userID': phone
+  }, function(err, re) {
+    if (err) {
+      callback(vlog.ee(err, 'checkOrder'));
+      return;
+    }
+    callback(null, re);
   });
 };
 
 var checkUserPics = function(openId, callback) {
   db.findOne(userTable, {
     'openId': openId
-  }, function(err, re) {
+  }, function(err, user) {
     if (err) {
       return callback(vlog.ee(err, 'checkUser:' + openId));
     }
-    if (re) {
+    if (user) {
       //这里使用user的id作为默认的albumId
-      findPics(re._id, function(err, pics) {
-        re.pics = pics;
-        callback(null, re);
+      findPics(user._id, function(err, pics) {
+        user.pics = pics;
+
+        if ((user.state + '') === '0' && user.phone) {
+          //查询绑定手机的账号是否订购,此时需要给用户加点
+          checkOrder(user.phone, function(err, orderInfo) {
+            if (err) {
+              callback(vlog.ee(err, 'checkOrder'));
+              return;
+            }
+            if (orderInfo && (orderInfo.state + '') === '1') {
+              //订购成功,加点
+              user.wxPoint += 20;
+              callback(null, user);
+              addUserPoint(user.openId, 20, orderInfo.createTime, function(err) {
+                if (err) {
+                  vlog.eo(err, 'checkOrder.addUserPoint');
+                }
+              });
+            } else {
+              callback(null, user);
+            }
+          });
+        } else {
+          callback(null, user);
+        }
+
       });
     } else {
-      addUser(openId, null, function(err, re) {
+      addUser(openId, null, null, function(err, re) {
         if (err) {
           return callback(vlog.ee(err, 'checkUserPics.addUser'));
         }
@@ -242,6 +305,21 @@ var addPrintPics = function(cypics, mid, callback) {
     }
     // vlog.log('push:%j,key:%j', pics, redisPrintTaskKeyPre + ':' + mid);
     callback(null, re);
+    //扣除点数
+    db.findOne(picTable, {
+      'url': pics[0]
+    }, function(err, re) {
+      if (err) {
+        callback(vlog.ee(err, 'addPrintPics.findOne'));
+        return;
+      }
+      addUserPoint(re.openId, -1, null, function(err, re) {
+        if (err) {
+          vlog.eo(err, 'addPrintPics.addUserPoint');
+          return;
+        }
+      });
+    });
   });
 };
 
@@ -268,6 +346,7 @@ exports.addPrintPics = addPrintPics;
 exports.getPrintPic = getPrintPic;
 exports.subUser = subUser;
 exports.unSubUser = unSubUser;
+
 
 // var pp = 'http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6229194685600710599.jpg-http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6229194591111430077.jpg';
 // var mm = 23;

@@ -27,7 +27,7 @@ var client = null; //new OAuth(config.appid, secret);
 
 var menu = {
   'button': [{
-      'type': 'pic_photo_or_album',
+      'type': 'pic_weixin',
       'name': '添加图片',
       'key': 'PIC_ADD_01'
     }, {
@@ -78,12 +78,12 @@ var createWX = function() {
   // api.getMenu(function(err, re) {
   //   if (err) {
   //     vlog.eo(err, 'api.getMenu');
-  api.createMenu(menu, function(err) {
-    if (err) {
-      return vlog.eo(err, 'api.createMenu');
-    }
-    vlog.log('menu created:%j', menu);
-  });
+        api.createMenu(menu, function(err) {
+          if (err) {
+            return vlog.eo(err, 'api.createMenu');
+          }
+          vlog.log('menu created:%j', menu);
+        });
   //   }
   //   vlog.log('getMenu:%j', re);
   // });

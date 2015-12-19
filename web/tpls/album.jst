@@ -7,7 +7,7 @@
       <b style="color:red" id="wxpoint">
       {{=it.user.wxPoint}}</b>张照片
       <br />
-      <a href="getPoint" class="xad">如何获得更多的冲印张数，去瞧瞧>></a>
+      <a href="#" class="xad">如何获得更多的冲印张数，去瞧瞧>></a>
     {{ }else{ }} 您本月还可以冲印
       <b style="color:red">{{=it.user.wxPoint}}</b>张照片
     {{ } }}
@@ -29,7 +29,8 @@
         </div>
         <div class="cont">亲，您目前只能冲印{{=it.user.wxPoint}}张照片哦！
           <br />
-          <a href="getPoint" class="xad">如何获得更多的冲印张数，去瞧瞧>></a></div>
+          <form action="order" method="post" class="hide" id="orderForm"><input type="hidden" name="openId" id="openId" value="{{=it.user.openId}}"></form>
+          <a href="#"  class="xad">如何获得更多的冲印张数，去瞧瞧>></a></div>
       </div>
     </div>
     <!-- 图片选取删除 end！ -->
@@ -40,6 +41,11 @@
   <script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
   <script type="text/javascript">
   $(function() {
+
+
+    $('.xad').click(function () {
+      $('#orderForm').submit();
+    });
 
     var chooseLimit = function() {
       $(".masd").show();
@@ -125,6 +131,7 @@
     $(".mask2").click(function() {
       $(".masd").hide();
     });
+
   });
   </script>
   {{#def.footer}}

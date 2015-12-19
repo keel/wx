@@ -22,7 +22,7 @@ router.get('*', function(req, resp, next) {
     'title': '我的相册',
     'user': {
       '_id': '1111',
-      'openId': 'openId',
+      'openId': 'openId1234ABCD',
       'createTime': 123456,
       'state': 0,
       'phone': '',
