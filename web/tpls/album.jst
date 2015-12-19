@@ -91,7 +91,7 @@
         $.post('delPic', {
           'pid': pid
         }, function() {
-          $(target).parent().remove();
+          $(target).parent().parent().remove();
           choosed[t.attr('src')] = 'false';
         }).error(function() {
           alert('删除失败,请稍后再试');
@@ -113,6 +113,10 @@
         if (choosed[i] === 'true') {
           cc += (i + '-');
         }
+      }
+      if (!cc) {
+        alert('您还未选择照片!');
+        return;
       }
       $('#cypics').val(cc);
       $('#cyForm').submit();

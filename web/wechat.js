@@ -9,6 +9,7 @@ var vlog = require('vlog').instance(__filename);
 var cache = require('./../lib/cache');
 
 var handlePic = require('./handlePic');
+var handleEvent = require('./handleEvent');
 
 
 var wxSecret = 'd4624c36b6795d1d99dcf0547af5443d';
@@ -26,6 +27,10 @@ var client = null; //new OAuth(config.appid, secret);
 
 var menu = {
   'button': [{
+      'type': 'pic_photo_or_album',
+      'name': '添加图片',
+      'key': 'PIC_ADD_01'
+    }, {
       'type': 'view',
       'name': '我的相册',
       'url': 'http://kf.loyoo.co/wxt/albumre'
@@ -44,6 +49,7 @@ var menu = {
   ]
 };
 
+var defaultReply = '发送图片给我,就可以直接冲印成实体照片! 不相试试?!';
 
 var init = function(callback) {
   var configArr = ['wxSecret', 'wxAppid', 'wxEncodingAESKey', 'wxToken'];
@@ -69,18 +75,18 @@ init();
 
 var createWX = function() {
   api = new WechatAPI(wxAppid, wxSecret);
-  api.getMenu(function(err, re) {
+  // api.getMenu(function(err, re) {
+  //   if (err) {
+  //     vlog.eo(err, 'api.getMenu');
+  api.createMenu(menu, function(err) {
     if (err) {
-      vlog.eo(err, 'api.getMenu');
-      api.createMenu(menu, function(err) {
-        if (err) {
-          return vlog.eo(err, 'api.createMenu');
-        }
-        vlog.log('menu created:%j', menu);
-      });
+      return vlog.eo(err, 'api.createMenu');
     }
-    vlog.log('getMenu:%j', re);
+    vlog.log('menu created:%j', menu);
   });
+  //   }
+  //   vlog.log('getMenu:%j', re);
+  // });
   return wechat(wxToken, wechat.text(function(message, req, res, next) {
     // message为文本内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -89,8 +95,9 @@ var createWX = function() {
     // MsgType: 'text',
     // Content: 'http',
     // MsgId: '5837397576500011341' }
-    res.reply('欢迎欢迎!');
+    res.reply(defaultReply);
   }).image(function(message, req, res, next) {
+    // vlog.log('msgId:%j',message.MsgId);
     handlePic.handle(message, req, res, function(err) {
       if (err) {
         vlog.eo(err, 'handlePic:' + message);
@@ -110,12 +117,11 @@ var createWX = function() {
 
     //web-app-2 msg:{'ToUserName':'gh_edd9a4c70883','FromUserName':'ocNuRw4WfsKKuGmZ_9h_iY3BXV6I','CreateTime':'1450148376','MsgType':'event','Event':'subscribe','EventKey':'}
 
-    if (message.Event === 'subscribe') {
-
-      res.reply('欢迎你!');
-    } else if (message.Event === 'unsubscribe') {
-      //TODO 取消用户状态
-    }
+    handleEvent.handle(message, req, res, function(err) {
+      if (err) {
+        vlog.eo(err, 'handleEvent');
+      }
+    });
   }).voice(function(message, req, res, next) {
     // message为音频内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -125,7 +131,7 @@ var createWX = function() {
     // MediaId: 'OMYnpghh8fRfzHL8obuboDN9rmLig4s0xdpoNT6a5BoFZWufbE6srbCKc_bxduzS',
     // Format: 'amr',
     // MsgId: '5837397520665436492' }
-    res.reply('欢迎!');
+    res.reply(defaultReply);
   }).video(function(message, req, res, next) {
     // message为视频内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -135,7 +141,7 @@ var createWX = function() {
     // MediaId: 'OMYnpghh8fRfzHL8obuboDN9rmLig4s0xdpoNT6a5BoFZWufbE6srbCKc_bxduzS',
     // ThumbMediaId: 'media_id',
     // MsgId: '5837397520665436492' }
-    res.reply('欢迎!');
+    res.reply(defaultReply);
   }).shortvideo(function(message, req, res, next) {
     // message为短视频内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -145,7 +151,7 @@ var createWX = function() {
     // MediaId: 'OMYnpghh8fRfzHL8obuboDN9rmLig4s0xdpoNT6a5BoFZWufbE6srbCKc_bxduzS',
     // ThumbMediaId: 'media_id',
     // MsgId: '5837397520665436492' }
-    res.reply('欢迎!');
+    res.reply(defaultReply);
   }).location(function(message, req, res, next) {
     // message为位置内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -157,7 +163,7 @@ var createWX = function() {
     // Scale: '15',
     // Label: {},
     // MsgId: '5837398761910985062' }
-    res.reply('欢迎!');
+    res.reply(defaultReply);
   }).link(function(message, req, res, next) {
     // message为链接内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -168,7 +174,7 @@ var createWX = function() {
     // Description: '公众平台官网链接',
     // Url: 'http://1024.com/',
     // MsgId: '5837397520665436492' }
-    res.reply('欢迎!');
+    res.reply(defaultReply);
   }).device_text(function(message, req, res, next) {
     // message为设备文本消息内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -181,7 +187,7 @@ var createWX = function() {
     // SessionID: '9394',
     // MsgId: '5837397520665436492',
     // OpenID: 'oPKu7jgOibOA-De4u8J2RuNKpZRw' }
-    res.reply('欢迎!');
+    res.reply(defaultReply);
   }).device_event(function(message, req, res, next) {
     // message为设备事件内容
     // { ToUserName: 'gh_d3e07d51b513',
@@ -197,13 +203,13 @@ var createWX = function() {
     // MsgId: '5837397520665436492',
     // OpenID: 'oPKu7jgOibOA-De4u8J2RuNKpZRw' }
     //
-    if (message.Event === 'subscribe_status' ||
-      message.Event === 'unsubscribe_status') {
-      //WIFI设备状态订阅,回复设备状态(1或0)
-      res.reply(1);
-    } else {
-      res.reply('欢迎!');
-    }
+    handleEvent.handle(message, req, res, function(err) {
+      if (err) {
+        vlog.eo(err, 'handleEvent');
+      }
+    });
+
+
   }));
 
 };

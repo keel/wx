@@ -17,31 +17,37 @@
 		</table>
 		<script src="http://wx.loyoo.co/passport/js/jquery-1.10.2.min.js"></script>
 		<script>
-			var printing = false;
+			// var printing = false;
+			var i = 1;
 
 			setInterval("loop()", 5000);
 
 			function printWX (id,picUrl) {
 				xy = get_random();
-				var big = picUrl.replace('tb__','');
+				var big = picUrl.replace('tb__','pr__');
 				$("#img").append('<img style="position:absolute; top:' + xy.y + 'px; left:' + xy.x + 'px;" width="152px" height="220px" src="' + picUrl + '" />');
 				window.external.print(id,big ); //调用打印
-				printing = false;
+				// printing = false;
 			}
 			function loop() {
-				if (printing) {
-					return;
+				if (i > 20) {
+					$('#img').html('');
+					i = 1;
 				}
-				printing = true;
+				// if (printing) {
+				// 	return;
+				// }
+				// printing = true;
 				$.get("print?mid=" + getQueryString('num') + "&ran=" + Math.random(), function(re) {
 					if (re+'' === 'null') {
-						printing = false;
+						// printing = false;
 						return;
 					}
-					printWX(1,re);
-					loop();
+					printWX(++i,re);
+					// loop();
 				}).error(function(err) {
-					printing = false;
+					// console.log(err);
+					// printing = false;
 				});
 
 			}

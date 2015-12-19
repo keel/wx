@@ -65,11 +65,24 @@ var addPic = function(uid, picUrl, picId, openId, wxUrl, createTime, callback) {
     'state': 0,
     'createTime': createTime || (new Date()).getTime()
   };
-  db.insertOne(picTable, newPic, function(err, re) {
+  db.findOne(picTable, {
+    '_id': id
+  }, function(err, re) {
     if (err) {
-      return callback(vlog.ee(err, 'addPic:' + uid + ',' + picUrl));
+      callback(vlog.ee(err, 'addPic.findOne'));
+      return;
     }
-    callback(null, re);
+    if (re) {
+      vlog.error('pic already exsit:%j', re);
+      callback(null, 'ok');
+    } else {
+      db.insertOne(picTable, newPic, function(err, re) {
+        if (err) {
+          return callback(vlog.ee(err, 'addPic:' + uid + ',' + picUrl));
+        }
+        callback(null, re);
+      });
+    }
   });
 };
 
@@ -87,10 +100,12 @@ var userAddPic = function(openId, picUrl, picId, wxUrl, createTime, callback) {
         if (err) {
           return callback(vlog.ee(err, 'userAddPic.addUser'));
         }
+        addPic(uid, picUrl, picId, openId, wxUrl, createTime, callback);
       });
+    } else {
+      uid = re._id;
+      addPic(uid, picUrl, picId, openId, wxUrl, createTime, callback);
     }
-    uid = re._id;
-    addPic(uid, picUrl, picId, openId, wxUrl, createTime, callback);
   });
 };
 
@@ -114,6 +129,62 @@ var addUser = function(openId, uid, callback) {
       return callback(vlog.ee(err, 'addUser'));
     }
     callback(null, user);
+  });
+};
+
+var updateUserPoint = function(openId, addPoint, callback) {
+  db.update(userTable, {
+    '$inc': {
+      'wxPoint': addPoint
+    }
+  }, function(err, re) {
+    if (err) {
+      callback(vlog.ee(err, 'updateUserPoint'));
+      return;
+    }
+    callback(null, re);
+  });
+};
+
+var unSubUser = function(openId, callback) {
+  db.update(userTable, {
+    'openId': openId
+  }, {
+    '$set': {
+      state: -1
+    }
+  }, function(err, re) {
+    if (err) {
+      callback(vlog.ee(err, 'unSubUser'));
+      return;
+    }
+    callback(null, re);
+  });
+};
+
+var subUser = function(openId, callback) {
+  findUser(openId, function(err, re) {
+    if (err) {
+      callback(vlog.ee(err, 'subUser'));
+      return;
+    }
+    if (re) {
+      db.update({
+        'openId': openId
+      }, {
+        '$set': {
+          state: 0
+        }
+      }, function(err, re) {
+        if (err) {
+          callback(vlog.ee(err, 'subUser.update'));
+          return;
+        }
+        callback(null, re);
+      });
+    } else {
+      addUser(openId, null, callback);
+    }
   });
 };
 
@@ -195,6 +266,8 @@ exports.userAddPic = userAddPic;
 exports.delPic = delPic;
 exports.addPrintPics = addPrintPics;
 exports.getPrintPic = getPrintPic;
+exports.subUser = subUser;
+exports.unSubUser = unSubUser;
 
 // var pp = 'http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6229194685600710599.jpg-http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6229194591111430077.jpg';
 // var mm = 23;

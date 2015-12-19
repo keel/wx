@@ -22,6 +22,11 @@ router.get('*', function(req, resp, next) {
       vlog.eo(err, 'getPrintPic');
       return;
     }
+    // if (re) {
+    //   vlog.log('will print:%j',re);
+    // }else{
+    //   vlog.log('no pic');
+    // }
     var out = re || 'null';
     // vlog.log('print will re:%j,out:%j',re,out);
     resp.status(200).send(out);
