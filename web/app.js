@@ -33,11 +33,17 @@ app.use('/print', print.router);
 app.use('/albumre', albumre.router);
 app.use('/album', album.router);
 app.use('/delPic', delPic.router);
-app.use('/', wechat.wx);
+wechat.wx(function(err, re) {
+  if (err) {
+    vlog.eo(err, 'app use wx');
+    return;
+  }
+  app.use('/', re);
 
-app.use(function(err, req, res, next) {
-  vlog.error(err.stack);
-  res.status(500).send('500001');
+  app.use(function(err, req, res, next) {
+    vlog.error(err.stack);
+    res.status(500).send('500001');
+  });
 });
 
 var start = function() {
