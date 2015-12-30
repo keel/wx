@@ -49,7 +49,7 @@ var menu = {
   ]
 };
 
-var defaultReply = '发送图片给我,就可以直接冲印成实体照片! 不相信试试?!';
+var defaultReply = '发送图片给我,就可以直接冲印成实体照片! 不信试试?!';
 
 var init = function(callback) {
   var configArr = ['wxSecret', 'wxAppid', 'wxEncodingAESKey', 'wxToken'];

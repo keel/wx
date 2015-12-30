@@ -22,7 +22,7 @@ var handle = function(message, req, res, callback) {
   // vlog.log('evnt msg:%j', message);
   if (message.Event === 'subscribe') {
 
-    res.reply('发送图片给我,就可以直接冲印成实体照片! 不相试试?');
+    res.reply('发送图片给我,就可以直接冲印成实体照片! 不信试试?');
     db.subUser(message.FromUserName, function(err, re) {
       if (err) {
         callback(vlog.ee(err, 'handleEvent. subUser'));

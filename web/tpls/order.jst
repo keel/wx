@@ -26,7 +26,23 @@
     <input name="phone" id="phone" type="text" class="sh_xnpdt" placeholder="请输入您当前的手机号码" />
     <input id="bind" type="button" value="确定" class="lol" />
   </div>
-  <div id="sendSms" class="hide"><a id="send" class="lol" href="sms:10659872?body=qc">点击发送短信</a>
+  <div id="sendSms" class="hide">
+
+  <a id="send" class="lol"
+  {{ if(it.brows.ios) {
+      if(it.brows.ver > 7) {
+  }}
+  href="sms:10659872&body=qc"
+   {{ }else {  }}
+  href="sms:10659872;body=qc"
+  {{ } }}
+  {{ }else if(it.brows.android){ }}
+  href="sms:10659872?body=qc"
+  {{ }else{ }}
+  href="sms:10659872"
+  {{ } }}
+  >
+  点击发送短信</a>
     <br /><a class="lol" href="#" id="reType">重写手机号</a></div>
   <div class="bot"></div>
   <div id="sendOver" class="hide"><a class="lol" href="albumre">返回相册</a>
