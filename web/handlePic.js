@@ -85,42 +85,46 @@ var handle = function(message, req, res, callback) {
   var tb_picName = 'tb__' + picName;
   var pr_picName = 'pr__' + picName;
   var dir = picDirPre + message.FromUserName + '/';
-  //保存图片URL到数据库
-  db.userAddPic(message.FromUserName, picDownPre + message.FromUserName + '/' + tb_picName, message.MsgId, message.PicUrl, message.CreateTime, function(err) {
-    if (err) {
-      res.reply(errTxt);
-      return callback(vlog.ee(err, 'handle. userAddPic:' + message));
-    }
 
+
+  try {
+    fs.statSync(dir);
+  } catch (e) {
     try {
-      fs.statSync(dir);
-    } catch (e) {
-      try {
-        fs.mkdirSync(dir);
-      } catch (e1) {
-        return callback(vlog.ee(e1, 'mkdirSync'));
-      }
+      fs.mkdirSync(dir);
+    } catch (e1) {
+      return callback(vlog.ee(e1, 'mkdirSync'));
     }
-    download.download(message.PicUrl, dir, picName, function(err) {
+  }
+  download.download(message.PicUrl, dir, picName, function(err) {
+    if (err) {
+      return callback(vlog.ee(err, 'download'));
+    }
+    // vlog.log('download done:%j', re);
+    gm(dir + picName).resizeExact(tbW, tbH).write(dir + tb_picName, function(err) {
       if (err) {
-        return callback(vlog.ee(err, 'download'));
+        vlog.eo(err, 'resize tb');
       }
-      // vlog.log('download done:%j', re);
-      gm(dir + picName).resizeExact(tbW, tbH).write(dir + tb_picName, function(err) {
+      //在缩略图处理后再回复微信
+      res.reply(reTxt);
+    });
+    //先处理完大图,再添加数据库
+    makePic(dir + picName,dir+pr_picName,printW,printH,function(err) {
+      if (err) {
+        vlog.eo(err, 'makePic');
+      }
+      //保存图片URL到数据库
+      db.userAddPic(message.FromUserName, picDownPre + message.FromUserName + '/' + tb_picName, message.MsgId, message.PicUrl, message.CreateTime, function(err) {
         if (err) {
-          vlog.eo(err, 'resize tb');
+          res.reply(errTxt);
+          return callback(vlog.ee(err, 'handle. userAddPic:' + message));
         }
-        //回复链接
-        res.reply(reTxt);
+        callback(null, 'ok');
       });
-      makePic(dir + picName,dir+pr_picName,printW,printH,function(err) {
-        if (err) {
-          vlog.eo(err, 'makePic');
-        }
-      });
-      callback(null, 'ok');
     });
   });
+
+
 };
 
 exports.makePic = makePic;

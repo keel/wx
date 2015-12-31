@@ -42,7 +42,9 @@
   <script type="text/javascript">
   $(function() {
 
-
+    if (!!(window.history && history.pushState)){
+      history.replaceState(null, "订购", "albumre");
+    }
     $('.xad').click(function () {
       $('#orderForm').submit();
     });
