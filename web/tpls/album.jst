@@ -2,14 +2,14 @@
 <body class="xce">
   <!-- 顶部 -->
   <div class="topList">
-    {{ if(it.user.orderTime == 0){ }}
-      您本月可以免费冲印
+    {{ if(it.user.state < 1){ }}
+      您本月可以冲印
       <b style="color:red" id="wxpoint">
       {{=it.user.wxPoint}}</b>张照片
       <br />
       <a href="#" class="xad">如何获得更多的冲印张数，去瞧瞧>></a>
-    {{ }else{ }} 您本月还可以冲印
-      <b style="color:red">{{=it.user.wxPoint}}</b>张照片
+    {{ }else{ }} 本月您可以继续冲印
+      <b style="color:red">{{=it.user.wxPoint}}</b>张4寸照片
     {{ } }}
   </div>
   <!-- 处理选取图片 -->

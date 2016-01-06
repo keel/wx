@@ -38,7 +38,7 @@ router.post('*', function(req, resp, next) {
   }
   // vlog.log('agent:%j, brw:%j',req.headers['user-agent'], brw);
   resp.send(render.order({
-    'title': '订购',
+    'title': '我的尊享',
     'openId': req.body.openId,
     'brows': brw
   }));

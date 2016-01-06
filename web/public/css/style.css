@@ -26,6 +26,128 @@ input {
 	color: #fff;
 }
 
+.phet {
+    background: url(../image/ph.png) no-repeat;
+    background-color: #fef7f7;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 100%;
+    z-index: 20;
+}
+
+::-webkit-input-placeholder {color:#cccccc;}
+.sh_phen {
+    width: 197px;
+    height: 35px;
+    border: 0;
+    line-height: 26px;
+    font-size: 14px;
+    outline: 0;
+    background-color: #FFF;
+    padding-left: 10px;
+    border-radius: 0;
+    margin: 0 auto;
+    display: block;
+    margin-top: 100%;
+	border:1px solid #ff6766;
+	border-radius:6px;
+}
+
+
+.liuc{background: url(../image/liuc.png) no-repeat;
+    background-color: #f6696a;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 100%;
+    z-index: 20;}
+
+.gouc{
+    background-color: #f7696a;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 100%;
+    z-index: 20;
+}
+
+.uie{    width: 80%;
+    font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
+    font-size: 15px;
+    color: #FFF;
+    margin: 35px auto;
+    line-height: 25px;}
+
+.ba1,.ba2{overflow: hidden;
+    height: 100px;
+    color: #000;
+    width: 80%;
+    margin: 0 auto;}
+
+.ba1{background: url(../image/ba1.png) no-repeat center center;background-size: 100% 100px;margin-top: -5%;}
+.ba2{background: url(../image/ba2.png) no-repeat center center;background-size: 100% 100px; margin-top:3%;}
+.contc{width:90%; margin:0 auto;}
+
+
+.contc .btit{font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
+    font-size: 16px;
+    color: #f7696a;
+    margin-left: 12px;
+    margin-top: 10%;}
+
+.contc .lipo{
+
+	font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
+    font-size: 12px;
+    color: #828282;
+    padding-left: 12px;
+    padding-top: 6px;
+    line-height: 19px;
+ }
+
+@media screen and (min-height:600px){
+
+
+.uie{    width: 80%;
+    font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
+    font-size: 18px;
+    color: #FFF;
+    margin: 35px auto;
+    line-height: 25px;}
+
+.ba1{background: url(../image/ba1.png) no-repeat center center;background-size: 100% 120px;margin-top: -5%;}
+.ba2{background: url(../image/ba2.png) no-repeat center center;background-size: 100% 120px; margin-top:3%;}
+
+.ba1,.ba2{overflow: hidden;
+    height: 120px;
+    color: #000;
+    width: 80%;
+    margin: 0 auto;}
+
+}
+
+.dweh {
+       font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
+    width: 100%;
+    height: 43px;
+    line-height: 55px;
+    text-align: center;
+    color: #FFFFFF;
+    background-color: #f7696a;
+    font-size: 12px;
+    position: fixed;
+    bottom: 0;
+    z-index: 9999;
+}
+
+
 .fwz {
 	background: url(../image/ks.png) no-repeat;
 	background-color: #ff6766;
@@ -312,19 +434,19 @@ input {
 
 .topList {
 	font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
-	width: 100%;
-	height: 68px;
-	line-height: 23px;
-	text-align: center;
-	color: #000;
-	background: #FFFFFF;
-	font-size: 14px;
-	position: fixed;
-	padding-top: 17px;
-	top: 0;
-	z-index: 300;
-	-moz-box-shadow:  2px 2px 2px 2px #e8e8e8; /* 老的 Firefox */
-	box-shadow: 2px 2px 2px 2px #e8e8e8;
+  width: 100%;
+  height: 55px;
+  line-height: 21px;
+  text-align: center;
+  color: #000;
+  background: #FFFFFF;
+  font-size: 14px;
+  position: fixed;
+  padding-top: 10px;
+  top: 0;
+  z-index: 300;
+  -moz-box-shadow: 2px 2px 2px 2px #e8e8e8;
+  box-shadow: 2px 2px 2px 2px #e8e8e8;
 }
 
 .xad {
@@ -339,22 +461,22 @@ input {
 
 .dwList {
 	font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu;
-	width: 100%;
-	height: 35px;
-	line-height: 26px;
-	text-align: center;
-	color: #FFFFFF;
-	background: #ff6766;
-	font-size: 15px;
-	position: fixed;
-	padding-top: 15px;
-	bottom: 0;
+  width: 100%;
+  height: 28px;
+  line-height: 12px;
+  text-align: center;
+  color: #FFFFFF;
+  background: #ff6766;
+  font-size: 15px;
+  position: fixed;
+  padding-top: 15px;
+  bottom: 0;
 
 }
 
 .kixbw {
 	width: 100%;
-	margin: 105px auto;
+	margin: 70px auto;
 	position: relative;
 	/* z-index: -1; */
 	margin-bottom: 56px;

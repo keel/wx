@@ -1,36 +1,57 @@
 {{#def.header}}
-<body class="fwk">
-<style>
-.lol {
-  padding: 5px 0.1em 0.4em;
-  -moz-border-radius: 13px;
-  -webkit-border-radius: 13px;
-  border-radius: 13px;
-  border: none;
-  color: #ff6766;
-  background: #fff;
-  font-size: 14px;
-  margin: 0 auto;
-  display: block;
-  margin-top: 12px;
-  font-weight: normal;
-  width: 100px;
-  margin-top: 5%;
-  text-align: center;
-}
-.hide {
-  display: none;
-}
-</style>
-  <div id="bindForm">
-    <input name="phone" id="phone" type="text" class="sh_xnpdt" placeholder="请输入您当前的手机号码" />
-    <input id="bind" type="button" value="确定" class="lol" />
-  </div>
-  <div id="sendSms" class="hide">
 
-  <a id="send" class="lol"
-  {{ if(it.brows.ios) {
-      if(it.brows.ver > 7) {
+<body class="phet">
+  <style>
+  .ror {
+    padding: 5px 0.1em 0.4em;
+    -moz-border-radius: 13px;
+    -webkit-border-radius: 13px;
+    border-radius: 13px;
+    border: none;
+    color: #FFF;
+    background: #ff6766;
+    font-size: 14px;
+    margin: 0 auto;
+    display: block;
+    margin-top: 12px;
+    font-weight: normal;
+    width: 100px;
+    margin-top: 5%;
+    text-align: center;
+  }
+
+  .lol {
+    padding: 8px;
+    -moz-border-radius: 13px;
+    -webkit-border-radius: 13px;
+    border-radius: 13px;
+    border: none;
+    color: #ff6766;
+    background: #fff;
+    font-size: 14px;
+    margin: 0 10px;
+    margin-top: 12px;
+    font-weight: normal;
+    width: 100px;
+    margin-top: 5%;
+    text-align: center;
+  }
+  .center{
+    text-align: center;
+  }
+  .hide {
+    display: none;
+  }
+  </style>
+  <div class="xgi">
+    <div id="bindForm">
+      <input name="phone" id="phone" type="text" class="sh_phen" placeholder="请输入您的手机号码" />
+      <input id="bind" type="button" value="确定" class="ror" />
+    </div>
+  </div>
+  <div id="sendSms" class="gouc hide">
+    <div class="uie">感谢您继续使用现场冲印，您的手机号码为<span id="currentPhone"></span>。 </div>
+    <div class="ba1"><a class="sendLink" {{ if(it.brows.ios) { if(it.brows.ver> 7) {
   }}
   href="sms:10659872&body=qc"
    {{ }else {  }}
@@ -40,37 +61,51 @@
   href="sms:10659872?body=qc"
   {{ }else{ }}
   href="sms:10659872"
+  {{ } }}><div class="contc"><p class="btit"><b>七彩尊享(点击订购)</b></p><p class="lipo">冲印20张4寸照片，10元/月。如无法正常发送短信，请编辑短信QC到10659872</p></div></a></div>
+    <div class="ba2"><a class="sendLink" {{ if(it.brows.ios) { if(it.brows.ver> 7) {
+  }}
+  href="sms:10659872&body=s"
+   {{ }else {  }}
+  href="sms:10659872;body=s"
   {{ } }}
-  >
-  点击发送短信</a>
-    <br /><a class="lol" href="#" id="reType">重写手机号</a></div>
-  <div class="bot"></div>
-  <div id="sendOver" class="hide"><a class="lol" href="albumre">返回相册</a>
-    </div>
-  <div class="bot"></div>
+  {{ }else if(it.brows.android){ }}
+  href="sms:10659872?body=s"
+  {{ }else{ }}
+  href="sms:10659872"
+  {{ } }}><div class="contc"><p class="btit"><b>时光尊享(点击订购)</b></p><p class="lipo">冲印30张4寸照片，15元/月。如无法正常发送短信，请编辑短信S到10659872</p></div></a></div>
+    <div id="midBt" class="center">
+      <br /><br /><br /><a class="lol" href="#" id="reType">重写手机号</a>   <a class="lol" href="albumre">返回相册</a></div>
+  </div>
+  <div id="bottom" class="dweh hide">如遇问题，请拨打客服咨询热线：4008807988</div>
   <script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
   <script type="text/javascript">
   $(function() {
 
-    var checkPhone = function( str ) {
+    var checkPhone = function(str) {
       return str.match(/^1[1-9]{2}\d{8}$/);
     };
 
     var showSend = function() {
-      $('#bind').hide();
+      $('#xgi').hide();
       $('#phone').attr('disabled', 'disabled');
-      $('#sendSms').show();
+      $('#sendSms,#bottom').show();
+      $('body').removeClass('phet');
+      $('#currentPhone').html($('#phone').val());
     };
 
-    $('#send').click(function () {
-      $('#sendSms').hide();
-      $('#sendOver').show();
+    var showPhone = function() {
+      $('body').addClass('phet');
+      $('#xgi').show();
+      $('#phone').removeAttr('disabled');
+      $('#sendSms,#bottom').hide();
+    };
+
+    $('.sendLink').click(function() {
+
     });
 
     $('#reType').click(function() {
-      $('#phone').removeAttr('disabled');
-      $('#bind').show();
-      $('#sendSms').hide();
+      showPhone();
     });
 
     $('#bind').click(function() {
