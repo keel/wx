@@ -17,7 +17,11 @@ var userTable = 'wxUser';
 var picTable = 'wxPic';
 var orderTable = 'monthUser';
 
-var orderProductID = '135000000000000228468';
+var orderProductID = ['135000000000000228468', '135000000000000228463'];
+
+var pointMap = {};
+pointMap[orderProductID[0]] = 20;
+pointMap[orderProductID[1]] = 30;
 
 var bindUser = function(openId, phone, callback) {
   db.findOneAndUpdate(userTable, {
@@ -162,7 +166,8 @@ var addUserPoint = function(openId, addPoint, orderTime, callback) {
       'wxPoint': addPoint
     },
     '$set': {
-      'state': 1
+      'state': 1,
+      'orderPoint': addPoint
     }
   };
   if (orderTime) {
@@ -223,14 +228,27 @@ var subUser = function(openId, callback) {
 
 var checkOrder = function(phone, callback) {
   db.findOne(orderTable, {
-    'productID': orderProductID,
+    'productID': orderProductID[0],
     'phone': phone
   }, function(err, re) {
     if (err) {
       callback(vlog.ee(err, 'checkOrder'));
       return;
     }
-    callback(null, re);
+    if (re) {
+      callback(null, re, pointMap[orderProductID[0]]);
+      return;
+    }
+    db.findOne(orderTable, {
+      'productID': orderProductID[1],
+      'phone': phone
+    }, function(err, re1) {
+      if (err) {
+        callback(vlog.ee(err, 'checkOrder'));
+        return;
+      }
+      callback(null, re1, pointMap[orderProductID[1]]);
+    });
   });
 };
 
@@ -248,16 +266,16 @@ var checkUserPics = function(openId, callback) {
 
         if ((user.state + '') === '0' && user.phone) {
           //查询绑定手机的账号是否订购,此时需要给用户加点
-          checkOrder(user.phone, function(err, orderInfo) {
+          checkOrder(user.phone, function(err, orderInfo, point) {
             if (err) {
               callback(vlog.ee(err, 'checkOrder'));
               return;
             }
             if (orderInfo && (orderInfo.state + '') === '0') {
               //订购成功,加点
-              user.wxPoint += 20;
+              user.wxPoint += point;
               callback(null, user);
-              addUserPoint(user.openId, 20, orderInfo.createTime, function(err) {
+              addUserPoint(user.openId, point, orderInfo.createTime, function(err) {
                 if (err) {
                   vlog.eo(err, 'checkOrder.addUserPoint');
                 }
