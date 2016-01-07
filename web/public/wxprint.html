@@ -1,90 +1,118 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
-	<head>
-		<meta charset="utf-8">
-		<title></title>
-	</head>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+</head>
 
-	<body background="printbg.jpg">
-		<embed style="position:absolute; top:588px;left:206px" src="http://wx.loyoo.co/print/acy.mp4" ShowTracker="false" ShowStatusBar="false" ShowPositionControls="false" ShowAudioControls="false" autostart="true" loop="true" width="822" height="488" />
-		<div id="num" style="font-style:italic;font-family:arial;font-size: 65px;text-align: center;top:66px;left:1747px;background-color:#8d5b19;color:white;position:absolute;width:110px;height:70px">12</div>
-		<table style="text-align:center;background-color:#f2f2ed;position:absolute; top:588px;left:1070px;width:642px;height:462px">
-			<tr>
-				<td id="img"></td>
-			</tr>
-		</table>
-		<script src="http://wx.loyoo.co/passport/js/jquery-1.10.2.min.js"></script>
-		<script>
-			// var printing = false;
-			var i = 1;
+<body background="printbg.jpg">
+	<embed style="position:absolute; top:588px;left:206px" src="http://wx.loyoo.co/print/acy.mp4" ShowTracker="false" ShowStatusBar="false" ShowPositionControls="false" ShowAudioControls="false" autostart="true" loop="true" width="822" height="488" />
+	<div id="num" style="font-style:italic;font-family:arial;font-size: 65px;text-align: center;top:66px;left:1747px;background-color:#8d5b19;color:white;position:absolute;width:110px;height:70px">12</div>
+	<table style="text-align:center;background-color:#f2f2ed;position:absolute; top:588px;left:1070px;width:642px;height:462px">
+		<tr>
+			<td id="img"></td>
+		</tr>
+	</table>
+	<script src="http://wx.loyoo.co/passport/js/jquery-1.10.2.min.js"></script>
+	<script>
+	// var printing = false;
+	var i = 1;
 
-			setInterval("loop()", 5000);
+	setInterval("loop()", 5000);
 
-			function printWX (id,picUrl) {
+	var printNow = function(err, re) {
+		if (!err) {
+			window.external.print(id, big);
+		}
+	};
+	var loadPic = function(picUrl, errTimes, callback) {
+		var img = new Image();
+		$(img).load(function() {
 				xy = get_random();
-				var big = picUrl.replace('tb__','pr__');
-				$("#img").append('<img style="position:absolute; top:' + xy.y + 'px; left:' + xy.x + 'px;" width="152px" height="220px" src="' + picUrl + '" />');
-				window.external.print(id,big ); //调用打印
-				// printing = false;
-			}
-			function loop() {
-				if (i > 20) {
-					$('#img').html('');
-					i = 1;
+				$(this).attr('style', 'position:absolute; top:' + xy.y + 'px; left:' + xy.x + 'px;');
+				$(this).attr('width', '152px').attr('height', '220px');
+				$('#img').append($(this));
+				callback(null, 'ok');
+			})
+			.error(function() {
+				errTimes++;
+				if (errTimes < 3) {
+					//
+					setTimeout('loadPic("' + picUrl + '",' + errTimes + ',printNow)', 2000);
+				} else {
+					callback('fail:' + picUrl);
 				}
-				// if (printing) {
-				// 	return;
-				// }
-				// printing = true;
-				$.get("print?mid=" + getQueryString('num') + "&ran=" + Math.random(), function(re) {
-					if (re+'' === 'null') {
-						// printing = false;
-						return;
-					}
-					printWX(++i,re);
-					// loop();
-				}).error(function(err) {
-					// console.log(err);
-					// printing = false;
-				});
+			})
+			.attr("src", picUrl);
+	};
 
-			}
+	function printWX(id, picUrl) {
+		var big = picUrl.replace('tb__', 'pr__');
+		loadPic(picUrl,0,loadPic);
 
-			function xy() {
-				this.x;
-				this.y;
-			}
-			var xy = new xy();
+		// xy = get_random();
+		// $("#img").append('<img style="position:absolute; top:' + xy.y + 'px; left:' + xy.x + 'px;" width="152px" height="220px" src="' + picUrl + '" />');
+		// window.external.print(id,big ); //调用打印
+	}
 
-			function get_random() {
-				var picture_x;
-				var picture_y;
-				//top:588px;left:1070px;width:642px;height:462px;
-				var picture_width = 152;
-				var picture_height = 220;
-				var table_width = 642;
-				var table_height = 462;
-				var x_max = 642 - 152;
-				var x_min = 0;
-				var y_max = 462 - 220;
-				var y_min = 0;
-				picture_x = Math.floor(x_min + Math.random() * (x_max - x_min));
-				picture_y = Math.floor(y_min + Math.random() * (y_max - y_min));
-				xy.x = picture_x;
-				xy.y = picture_y;
-				return xy;
+	function loop() {
+		if (i > 20) {
+			$('#img').html('');
+			i = 1;
+		}
+		// if (printing) {
+		// 	return;
+		// }
+		// printing = true;
+		$.get("print?mid=" + getQueryString('num') + "&ran=" + Math.random(), function(re) {
+			if (re + '' === 'null') {
+				// printing = false;
+				return;
 			}
-			$("#num").html(getQueryString('num'));
-			function getQueryString(name) {
-				//获取url参数
-				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-				var r = window.location.search.substr(1).match(reg);
-				if (r != null) return unescape(r[2]);
-				return null;
-			}
-		</script>
-	</body>
+			printWX(++i, re);
+			// loop();
+		}).error(function(err) {
+			// console.log(err);
+			// printing = false;
+		});
+
+	}
+
+	function xy() {
+		this.x;
+		this.y;
+	}
+	var xy = new xy();
+
+	function get_random() {
+		var picture_x;
+		var picture_y;
+		//top:588px;left:1070px;width:642px;height:462px;
+		var picture_width = 152;
+		var picture_height = 220;
+		var table_width = 642;
+		var table_height = 462;
+		var x_max = 642 - 152;
+		var x_min = 0;
+		var y_max = 462 - 220;
+		var y_min = 0;
+		picture_x = Math.floor(x_min + Math.random() * (x_max - x_min));
+		picture_y = Math.floor(y_min + Math.random() * (y_max - y_min));
+		xy.x = picture_x;
+		xy.y = picture_y;
+		return xy;
+	}
+	$("#num").html(getQueryString('num'));
+
+	function getQueryString(name) {
+		//获取url参数
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null) return unescape(r[2]);
+		return null;
+	}
+	</script>
+</body>
 
 </html>

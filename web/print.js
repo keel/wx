@@ -20,6 +20,7 @@ router.get('*', function(req, resp, next) {
   db.getPrintPic(req.query.mid, function(err, re) {
     if (err) {
       vlog.eo(err, 'getPrintPic');
+      resp.status(200).send('null');
       return;
     }
     // if (re) {

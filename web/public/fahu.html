@@ -7,7 +7,6 @@
 		<meta http-equiv="pragma" content="no-cache">
 		<meta http-equiv="cache-control" content="no-cache">
 		<meta http-equiv="expires" content="0">
-		<link rel="stylesheet" href="css/style.css">
 		<title>业务介绍</title>
 
 	</head>
@@ -17,6 +16,11 @@
 		<div class="contex">
 			<h2>恭喜您成功订购XXX</h2>
 			<br />
+			<table style="text-align:center;background-color:#f2f2ed;width:642px;height:462px">
+				<tr>
+					<td id="img"></td>
+				</tr>
+			</table>
 			<p class="pi">
 				1、输入要搜索的产品(产品id号/产品标题)；
 				<br/> 2、勾选模糊查询可以模糊查询，不勾选是精确查询；
@@ -25,10 +29,67 @@
 				<br/> 5、点击分页每页显示10条产品；
 				<br/>
 			</p>
+			<div id="re"></div>
 			<a href="#" class="rex">返回</a>
 
 		</div>
+		<script src="http://wx.loyoo.co/passport/js/jquery-1.10.2.min.js"></script>
+		<script>
+		function xy() {
+			this.x;
+			this.y;
+		}
+		var xy = new xy();
 
+		function get_random() {
+			var picture_x;
+			var picture_y;
+			//top:588px;left:1070px;width:642px;height:462px;
+			var picture_width = 152;
+			var picture_height = 220;
+			var table_width = 642;
+			var table_height = 462;
+			var x_max = 642 - 152;
+			var x_min = 0;
+			var y_max = 462 - 220;
+			var y_min = 0;
+			picture_x = Math.floor(x_min + Math.random() * (x_max - x_min));
+			picture_y = Math.floor(y_min + Math.random() * (y_max - y_min));
+			xy.x = picture_x;
+			xy.y = picture_y;
+			return xy;
+		}
+
+		var print = function(err,re) {
+			if (!err) {
+				$('#re').html('done');
+			}else{
+				$('#re').html('err');
+			}
+		};
+			var loadPic = function(picUrl,errTimes,callback) {
+				var img = new Image();
+		    $(img).load(function() {
+		        xy = get_random();
+		        $(this).attr('style','position:absolute; top:' + xy.y + 'px; left:' + xy.x + 'px;');
+		        $(this).attr('width','152px').attr('height','220px');
+		        $('#img').append($(this));
+		        callback(null,'ok');
+		    })
+		    .error(function() {
+		    	errTimes++;
+		    	if (errTimes < 3) {
+		    		//
+		       setTimeout('loadPic("'+picUrl+'",'+errTimes+',print)',2000);
+		    	}else{
+		    		callback('fail:'+picUrl);
+		    	}
+		    })
+		    .attr("src", picUrl);
+			};
+
+			loadPic('http://t1.niutuku.com/960/33/33-599964X.jpg',0,print);
+		</script>
 	</body>
 
 </html>

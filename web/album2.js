@@ -22,7 +22,7 @@ router.get('*', function(req, resp, next) {
     'title': '我的相册',
     'user': {
       '_id': '1111',
-      'openId': 'openId1234ABCD',
+      'openId': 'ow_7Ow2IrZOYEEys_bkVNFyGailE',
       'createTime': 123456,
       'state': 0,
       'phone': '',
@@ -31,16 +31,16 @@ router.get('*', function(req, resp, next) {
       'wxPoint': 3,
       'pics': [{
         '_id': '2341234',
-        'url': 'http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6228935295345820680.jpg'
+        'url': 'http://kf.loyoo.co/wxpics/ow_7Ow2IrZOYEEys_bkVNFyGailE/tb__6236886624134712170.jpg'
       }, {
         '_id': '2341232234',
-        'url': 'http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6228945865260336260.jpg'
+        'url': 'http://kf.loyoo.co/wxpics/ow_7Ow2IrZOYEEys_bkVNFyGailE/tb__6236886624134712170.jpg'
       }, {
         '_id': '234123534',
-        'url': 'http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6228945865260336261.jpg'
+        'url': 'http://kf.loyoo.co/wxpics/ow_7Ow2IrZOYEEys_bkVNFyGailE/tb__6236886624134712171.jpg'
       }, {
         '_id': '23412324',
-        'url': 'http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6228945865260336261.jpg'
+        'url': 'http://kf.loyoo.co/wxpics/ow_7Ow2IrZOYEEys_bkVNFyGailE/tb__6236886624134712171.jpg'
       }]
     }
   }));

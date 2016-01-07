@@ -4,8 +4,9 @@
 <script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 <script type="text/javascript">
 $(function() {
-
-/* 可循环查询冲印状态 */
+  if (!!(window.history && history.pushState)){
+    history.replaceState(null, "相册", "albumre");
+  }
   });
  </script>
 

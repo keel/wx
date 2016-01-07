@@ -17,7 +17,7 @@ var userTable = 'wxUser';
 var picTable = 'wxPic';
 var orderTable = 'monthUser';
 
-var orderProductID = ['135000000000000228468', '135000000000000228463'];
+var orderProductID = ['135000000000000228468', '135000000000000230153'];
 
 var pointMap = {};
 pointMap[orderProductID[0]] = 20;
@@ -164,12 +164,14 @@ var addUserPoint = function(openId, addPoint, orderTime, callback) {
   var update = {
     '$inc': {
       'wxPoint': addPoint
-    },
-    '$set': {
-      'state': 1,
-      'orderPoint': addPoint
     }
   };
+  if (addPoint > 0) {
+    update['$set'] = {
+      'state': 1,
+      'orderPoint': addPoint
+    };
+  }
   if (orderTime) {
     update['$set']['orderTime'] = orderTime;
   }
@@ -274,11 +276,11 @@ var checkUserPics = function(openId, callback) {
             if (orderInfo && (orderInfo.state + '') === '0') {
               //订购成功,加点
               user.wxPoint += point;
-              callback(null, user);
               addUserPoint(user.openId, point, orderInfo.createTime, function(err) {
                 if (err) {
                   vlog.eo(err, 'checkOrder.addUserPoint');
                 }
+                callback(null, user);
               });
             } else {
               callback(null, user);
@@ -329,7 +331,6 @@ var addPrintPics = function(cypics, mid, callback) {
       return;
     }
     // vlog.log('push:%j,key:%j', pics, redisPrintTaskKeyPre + ':' + mid);
-    callback(null, re);
     //扣除点数
     db.findOne(picTable, {
       'url': pics[0]
@@ -340,9 +341,10 @@ var addPrintPics = function(cypics, mid, callback) {
       }
       addUserPoint(re.openId, -1 * pics.length, null, function(err, re) {
         if (err) {
-          vlog.eo(err, 'addPrintPics.addUserPoint');
+          callback(vlog.ee(err, 'addPrintPics.addUserPoint'));
           return;
         }
+        callback(null, re);
       });
     });
   });
@@ -354,8 +356,30 @@ var getPrintPic = function(mid, callback) {
       callback(vlog.ee(err, 'popFromCache'));
       return;
     }
-    // vlog.log('pop:%j', re);
-    callback(null, re);
+    if (!re) {
+      return callback(null,re);
+    }
+    //检查图片是否已经入库,如未入库,则放回
+    db.findOne(picTable, {
+      'url': re
+    }, function(err, pic) {
+      if (err) {
+        callback(vlog.ee(err, 'getPrintPic:findOne:'+re));
+        return;
+      }
+      if (pic) {
+        callback(null,re);
+      } else {
+        db.rPushToCache(redisPrintTaskKeyPre + ':' + mid, re, function(err, re) {
+          if (err) {
+            callback(vlog.ee(err, 'getPrintPic:pushToCache:' + re));
+            return;
+          }
+          callback(null,null);
+        });
+      }
+    });
+
   });
 };
 
