@@ -325,28 +325,45 @@ var addPrintPics = function(cypics, mid, callback) {
   // for (var i = 0; i < pics.length; i++) {
   //   pics[i] = pics[i].replace('tb__', '');
   // }
-  db.pushToCache(redisPrintTaskKeyPre + ':' + mid, pics, function(err, re) {
+
+  // vlog.log('push:%j,key:%j', pics, redisPrintTaskKeyPre + ':' + mid);
+  //确认图片是否存在
+  db.findOne(picTable, {
+    'url': pics[0]
+  }, function(err, re) {
     if (err) {
-      callback(vlog.ee(err, 'pushToCache:' + cypics));
+      callback(vlog.ee(err, 'addPrintPics.findOne'));
       return;
     }
-    // vlog.log('push:%j,key:%j', pics, redisPrintTaskKeyPre + ':' + mid);
-    //扣除点数
-    db.findOne(picTable, {
-      'url': pics[0]
-    }, function(err, re) {
-      if (err) {
-        callback(vlog.ee(err, 'addPrintPics.findOne'));
-        return;
-      }
-      addUserPoint(re.openId, -1 * pics.length, null, function(err, re) {
+    if (re && re.openId) {
+      //确认用户及点数
+      findUser(re.openId, function(err, user) {
         if (err) {
-          callback(vlog.ee(err, 'addPrintPics.addUserPoint'));
-          return;
+          return callback(vlog.ee(err, 'addPrintPics:findUser:' + re.openId));
         }
-        callback(null, re);
+        if (user && (user.wxPoint - 1 * pics.length) >= 0) {
+          //处理点数
+          addUserPoint(re.openId, (-1 * pics.length), null, function(err) {
+            if (err) {
+              callback(vlog.ee(err, 'addPrintPics.addUserPoint'));
+              return;
+            }
+            //添加到redis队列
+            db.pushToCache(redisPrintTaskKeyPre + ':' + mid, pics, function(err, re) {
+              if (err) {
+                callback(vlog.ee(err, 'addPrintPics:pushToCache:' + cypics));
+                return;
+              }
+              callback(null, re);
+            });
+          });
+        } else {
+          callback(vlog.ee(null, 'user not exsit or point not enough:' + pics[0]));
+        }
       });
-    });
+    } else {
+      callback(vlog.ee(null, 'pic not exsit:' + pics[0]));
+    }
   });
 };
 
@@ -357,25 +374,25 @@ var getPrintPic = function(mid, callback) {
       return;
     }
     if (!re) {
-      return callback(null,re);
+      return callback(null, re);
     }
     //检查图片是否已经入库,如未入库,则放回
     db.findOne(picTable, {
       'url': re
     }, function(err, pic) {
       if (err) {
-        callback(vlog.ee(err, 'getPrintPic:findOne:'+re));
+        callback(vlog.ee(err, 'getPrintPic:findOne:' + re));
         return;
       }
       if (pic) {
-        callback(null,re);
+        callback(null, re);
       } else {
         db.rPushToCache(redisPrintTaskKeyPre + ':' + mid, re, function(err, re) {
           if (err) {
             callback(vlog.ee(err, 'getPrintPic:pushToCache:' + re));
             return;
           }
-          callback(null,null);
+          callback(null, null);
         });
       }
     });
