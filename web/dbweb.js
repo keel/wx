@@ -321,7 +321,7 @@ var delPic = function(picId, callback) {
 var redisPrintTaskKeyPre = 'wx:printpics';
 
 var addPrintPics = function(cypics, mid, callback) {
-  var pics = cypics.substring(0, cypics.length - 1).split('-');
+  var pics = cypics.substring(0, cypics.length - 3).split('###');
   // for (var i = 0; i < pics.length; i++) {
   //   pics[i] = pics[i].replace('tb__', '');
   // }
