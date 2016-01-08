@@ -45,7 +45,7 @@
   </style>
   <div class="xgi">
     <div id="bindForm">
-      <input name="phone" id="phone" type="text" class="sh_phen" placeholder="请输入您的手机号码" />
+      <input name="phone" id="phone" type="text" class="sh_phen" placeholder="请输入您的电信手机号码" />
       <input id="bind" type="button" value="确定" class="ror" />
     </div>
   </div>
@@ -82,7 +82,7 @@
   $(function() {
 
     var checkPhone = function(str) {
-      return str.match(/^1[1-9]{2}\d{8}$/);
+      return str.match(/^1(33|53|89|80|81|77)\d{8}$/);
     };
 
     var showSend = function() {
@@ -110,7 +110,7 @@
 
     $('#bind').click(function() {
       if (!checkPhone($('#phone').val())) {
-        alert('您输入的手机号码不正确,请重新输入');
+        alert('输入不正确,请输入中国电信手机号码');
         return;
       }
       $.post('bind', {
