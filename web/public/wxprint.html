@@ -7,9 +7,9 @@
 </head>
 
 <body background="printbg.jpg">
-	<embed style="position:absolute; top:588px;left:206px" src="http://wx.loyoo.co/print/acy.mp4" ShowTracker="false" ShowStatusBar="false" ShowPositionControls="false" ShowAudioControls="false" autostart="true" loop="true" width="822" height="488" />
-	<div id="num" style="font-style:italic;font-family:arial;font-size: 65px;text-align: center;top:66px;left:1747px;background-color:#8d5b19;color:white;position:absolute;width:110px;height:70px">12</div>
-	<table style="text-align:center;background-color:#f2f2ed;position:absolute; top:588px;left:1070px;width:642px;height:462px">
+<embed style="position:absolute; top:660px;left:78px" src="http://wx.loyoo.co/print/acy.mp4" ShowTracker="false" ShowStatusBar="false" ShowPositionControls="false" ShowAudioControls="false" autostart="true" loop="true" width="656" height="370" />
+	<div id="num" style="font-style:italic;font-family:arial;font-size: 65px;text-align: center;top:56px;left:1747px;background-color:#8d5b19;color:white;position:absolute;width:110px;height:80px">12</div>
+	<table style="text-align:center;background-color:#f2f2ed;position:absolute; top:640px;left:1340px;width:510px;height:395px">
 		<tr>
 			<td id="img"></td>
 		</tr>
@@ -90,12 +90,13 @@
 		var picture_y;
 		//top:588px;left:1070px;width:642px;height:462px;
 		var picture_width = 152;
-		var picture_height = 220;
-		var table_width = 642;
-		var table_height = 462;
-		var x_max = 642 - 152;
-		var x_min = 0;
-		var y_max = 462 - 220;
+    var picture_height = 220;
+    var table_width = 510;
+    var table_height = 395;
+    var x_max = table_width- picture_width;
+    var x_min = 0;
+    var y_max = table_height- picture_height;
+
 		var y_min = 0;
 		picture_x = Math.floor(x_min + Math.random() * (x_max - x_min));
 		picture_y = Math.floor(y_min + Math.random() * (y_max - y_min));
