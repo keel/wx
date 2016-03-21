@@ -51,6 +51,18 @@
   </div>
   <div id="sendSms" class="gouc hide">
     <div class="uie">感谢您继续使用现场冲印，您的手机号码为<span id="currentPhone"></span>。 </div>
+      <div class="ba2"><a class="sendLink" {{ if(it.brows.ios) { if(it.brows.ver> 7) {
+    }}
+    href="sms:10659872&body=ch"
+     {{ }else {  }}
+    href="sms:10659872;body=ch"
+    {{ } }}
+    {{ }else if(it.brows.android){ }}
+    href="sms:10659872?body=ch"
+    {{ }else{ }}
+    href="sms:10659872"
+    {{ } }}><div class="contc"><p class="btit"><b>彩虹尊享(点击订购)</b></p><p class="lipo">冲印10张4寸照片，5元/月。如无法正常发送短信，请编辑短信CH到10659872</p></div></a></div>
+
     <div class="ba1"><a class="sendLink" {{ if(it.brows.ios) { if(it.brows.ver> 7) {
   }}
   href="sms:10659872&body=qc"
@@ -73,6 +85,7 @@
   {{ }else{ }}
   href="sms:10659872"
   {{ } }}><div class="contc"><p class="btit"><b>时光尊享(点击订购)</b></p><p class="lipo">冲印30张4寸照片，15元/月。如无法正常发送短信，请编辑短信S到10659872</p></div></a></div>
+
     <div id="midBt" class="center">
       <br /><br /><br /><a class="lol" href="#" id="reType">重写手机号</a>   <a class="lol" href="albumre">返回相册</a></div>
   </div>
@@ -82,7 +95,7 @@
   $(function() {
 
     var checkPhone = function(str) {
-      return str.match(/^1(33|53|89|80|81|77)\d{8}$/);
+      return str.match(/^1(33|53|89|80|81|77|73)\d{8}$/);
     };
 
     var showSend = function() {

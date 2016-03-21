@@ -89,10 +89,10 @@ input {
     height: 100px;
     color: #000;
     width: 80%;
-    margin: 0 auto;}
+    margin: 0 auto;margin-top: -5%;margin-bottom: 3%;}
 
-.ba1{background: url(../image/ba1.png) no-repeat center center;background-size: 100% 100px;margin-top: -5%;}
-.ba2{background: url(../image/ba2.png) no-repeat center center;background-size: 100% 100px; margin-top:3%;}
+.ba1{background: url(../image/ba1.png) no-repeat center center;background-size: 100% 100px;}
+.ba2{background: url(../image/ba2.png) no-repeat center center;background-size: 100% 100px; }
 .contc{width:90%; margin:0 auto;}
 
 

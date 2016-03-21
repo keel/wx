@@ -10,18 +10,19 @@ TODO; 需要实现包月业务,在orderRelation表中增加state标签,或者建
 
 'use strict';
 var db = require('./../lib/db');
-var cache = require('./../lib/cache');
+// var cache = require('./../lib/cache');
 var vlog = require('vlog').instance(__filename);
 var userTable = 'wxUser';
 // var albumTable = 'album';
 var picTable = 'wxPic';
 var orderTable = 'monthUser';
 
-var orderProductID = ['135000000000000228468', '135000000000000230153'];
+var orderProductID = ['135000000000000228468', '135000000000000230153', '135000000000000228467'];
 
 var pointMap = {};
 pointMap[orderProductID[0]] = 20;
 pointMap[orderProductID[1]] = 30;
+pointMap[orderProductID[2]] = 10;
 
 var bindUser = function(openId, phone, callback) {
   db.findOneAndUpdate(userTable, {
@@ -228,29 +229,33 @@ var subUser = function(openId, callback) {
   });
 };
 
+
 var checkOrder = function(phone, callback) {
-  db.findOne(orderTable, {
-    'productID': orderProductID[0],
+  db.query(orderTable, {
     'phone': phone
-  }, function(err, re) {
+  }, {
+    '_id': -1
+  }, 0, 50, function(err, docs) {
     if (err) {
       callback(vlog.ee(err, 'checkOrder'));
       return;
     }
-    if (re) {
-      callback(null, re, pointMap[orderProductID[0]]);
-      return;
-    }
-    db.findOne(orderTable, {
-      'productID': orderProductID[1],
-      'phone': phone
-    }, function(err, re1) {
-      if (err) {
-        callback(vlog.ee(err, 'checkOrder'));
-        return;
+    if (docs && docs.length > 0) {
+      var outArr = [];
+      var pointForAdd = 0;
+      for (var i = 0; i < docs.length; i++) {
+        //属于订购状态的本业务的productID
+        var curPoint = pointMap[docs[i].productID];
+        if (docs[i].state + '' === '0' && curPoint) {
+          outArr.push(docs[i]);
+          pointForAdd += curPoint;
+        }
       }
-      callback(null, re1, pointMap[orderProductID[1]]);
-    });
+      callback(null, outArr, pointForAdd);
+      return;
+    } else {
+      callback(null, null);
+    }
   });
 };
 
@@ -273,10 +278,10 @@ var checkUserPics = function(openId, callback) {
               callback(vlog.ee(err, 'checkOrder'));
               return;
             }
-            if (orderInfo && (orderInfo.state + '') === '0') {
+            if (orderInfo && point) {
               //订购成功,加点
               user.wxPoint += point;
-              addUserPoint(user.openId, point, orderInfo.createTime, function(err) {
+              addUserPoint(user.openId, point, orderInfo[0].createTime, function(err) {
                 if (err) {
                   vlog.eo(err, 'checkOrder.addUserPoint');
                 }
