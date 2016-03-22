@@ -10,7 +10,8 @@ var download = require('./../lib/download');
 var fs = require('fs');
 var db = require('./dbweb');
 var gm = require('gm');
-var picDirPre = '/data/apps/pics/';
+// var picDirPre = '/data/apps/pics/';
+var picDirPre = '/Users/keel/dev/pics/';
 var picDownPre = 'http://kf.loyoo.co/wxpics/';
 var albumUrl = 'http://kf.loyoo.co/wxt/albumre';
 var reTxt = '<a href="' + albumUrl + '">您已成功上传一张照片至相册,点击本消息查看.</a>';
@@ -21,6 +22,17 @@ var errTxt = '本次照片上传失败,请稍后再试,谢谢.';
 var printW = 1648;
 var printH = 2354;
 var printDpi = 96;
+
+//w4 表示4寸照片的宽度
+var picSizeMap = {
+  'w4': 1648,
+  'h4': 2354,
+  'd4': 96,
+  'w6': 2354,
+  'h6': 3296,
+  'd6': 96
+};
+
 
 var tbW = 110;
 var tbH = 140;
@@ -34,36 +46,68 @@ var tbH = 140;
  * @param  {Function} callback
  * @return {}
  */
-var makePic = function(srcPic,destPic,targetW,targetH,callback) {
+var makePic = function(srcPic, destPic, targetW, targetH, callback) {
   var target = gm(srcPic);
-  target.size(function (err, size) {
-    if (err){
-      return callback(vlog.ee(err,'resize size'));
+  target.size(function(err, size) {
+    if (err) {
+      return callback(vlog.ee(err, 'resize size'));
     }
     var w = targetW;
     var h = targetH;
     if (size.width > size.height) {
-      if (size.width/size.height > h/w) {
+      if (size.width / size.height > h / w) {
         h = null;
-      }else{
+      } else {
         w = null;
       }
-      target = target.rotate('white',90);
-    }else{
-      if (size.width/size.height > w/h) {
+      target = target.rotate('white', 90);
+    } else {
+      if (size.width / size.height > w / h) {
         w = null;
-      }else{
+      } else {
         h = null;
       }
     }
     // vlog.log('w:%j,h:%j',w,h);
-    target.gravity('Center').density(printDpi,printDpi).resize(w,h).crop(targetW, targetH).write(destPic, function(err) {
+    target.gravity('Center').density(printDpi, printDpi).resize(w, h).crop(targetW, targetH).write(destPic, function(err) {
       if (err) {
-        return callback(vlog.ee(err,'resize crop write'));
+        return callback(vlog.ee(err, 'resize crop write'));
       }
-      callback(null,'ok');
+      callback(null, 'ok');
     });
   });
+};
+
+
+var makePicSize = function(onePicUrl, picSize, callback) {
+  var newWidth = picSizeMap['w' + picSize];
+  if (!newWidth) {
+    return callback(vlog.ee(null, 'picSize err', picSize, onePicUrl));
+  }
+  // 解析picUrl http://kf.loyoo.co/wxpics/ow_7Ow4deFA9n0fONl5fy1b1hl2M/tb__6237383182483689518.jpg
+  var urlStr = onePicUrl.replace(/http:\/\//, '');
+  var urlArr = urlStr.split('\/');
+  if (urlArr.length !== 4) {
+    return callback(vlog.ee(null, 'onePicUrl err', onePicUrl));
+  }
+  var picFileName = urlArr[3].replace('tb__', '');
+  var oldPrFilePath = picDirPre + urlArr[2] + '/pr__' + picFileName;
+  var newPrFilePath = picDirPre + urlArr[2] + '/4__pr__' + picFileName;
+  // vlog.log(',picFileName:%s,oldPrFilePath:%s,newPrFilePath:%s',picFileName,oldPrFilePath,newPrFilePath);
+  try{
+    try{
+      fs.statSync(newPrFilePath);
+      // vlog.log('skip:%s',newPrFilePath);
+      return callback(null,'ok');
+    }catch(e){
+
+    }
+    fs.renameSync(oldPrFilePath, newPrFilePath);
+  }catch(e){
+    return callback(vlog.ee(e, 'renameSync err', oldPrFilePath, newPrFilePath));
+  }
+  var srcPic = picDirPre + urlArr[2] + '/' + picFileName;
+  makePic(srcPic, oldPrFilePath, newWidth, picSizeMap['h' + picSize], callback);
 };
 
 var handle = function(message, req, res, callback) {
@@ -109,7 +153,7 @@ var handle = function(message, req, res, callback) {
       res.reply(reTxt);
     });
     //先处理完大图,再添加数据库
-    makePic(dir + picName,dir+pr_picName,printW,printH,function(err) {
+    makePic(dir + picName, dir + pr_picName, printW, printH, function(err) {
       if (err) {
         vlog.eo(err, 'makePic');
       }
@@ -128,7 +172,15 @@ var handle = function(message, req, res, callback) {
 };
 
 exports.makePic = makePic;
+exports.makePicSize = makePicSize;
 exports.handle = handle;
+
+
+// var onePicUrl = 'http://kf.loyoo.co/wxpics/ow_7Ow4deFA9n0fONl5fy1b1hl2M/tb__6237383182483689518.jpg';
+// var urlStr = onePicUrl.replace(/http:\/\//, '');
+// var urlArr = urlStr.split('\/');
+
+// console.log('arr:%j', urlArr);
 
 // var testPic = '/Users/keel/Desktop/printbg.jpg';
 // // testPic = '/Users/keel/Desktop/sms.png';
@@ -175,6 +227,3 @@ exports.handle = handle;
 //     });
 //   }
 // });
-
-
-

@@ -13,6 +13,7 @@ var db = require('./../lib/db');
 // var cache = require('./../lib/cache');
 var vlog = require('vlog').instance(__filename);
 var userTable = 'wxUser';
+var handlePic = require('./handlePic');
 // var albumTable = 'album';
 var picTable = 'wxPic';
 var orderTable = 'monthUser';
@@ -323,15 +324,43 @@ var delPic = function(picId, callback) {
   });
 };
 
-var redisPrintTaskKeyPre = 'wx:printpics';
+var redisPrintTaskKeyPre = 'wx:printpics:';
 
-var addPrintPics = function(cypics, mid, callback) {
+
+var checkPicSize = function(picSize, pics, callback) {
+  //如果picSize!==4则按size进行图片处理,处理后将原大图重命名为xxx_4.jpg,新大图使用原大图名称,完成处理后再跳出方法去push redis
+  if (picSize === 4) {
+    return callback(null, 'ok');
+  }
+  var doneCount = pics.length;
+  var checkPicDone = function(picSize, onePic, callback) {
+
+    handlePic.makePicSize(onePic, picSize, function(err, re) {
+      if (err || re !== 'ok') {
+        doneCount = 0;
+        return callback(vlog.ee(err, 'checkPicSize:makePicSize'));
+      }
+      // vlog.log('handlePic:%j,doneCount:%d',onePic,doneCount);
+      doneCount--;
+      if (doneCount <= 0) {
+        // vlog.log('handlePic done');
+        return callback(null, 'ok');
+      }
+    });
+  };
+
+  for (var i = 0; i < pics.length; i++) {
+    checkPicDone(picSize, pics[i], callback);
+  }
+};
+
+var addPrintPics = function(cypics, mid, picSize, callback) {
   var pics = cypics.substring(0, cypics.length - 3).split('###');
   // for (var i = 0; i < pics.length; i++) {
   //   pics[i] = pics[i].replace('tb__', '');
   // }
 
-  // vlog.log('push:%j,key:%j', pics, redisPrintTaskKeyPre + ':' + mid);
+  // vlog.log('push:%j,key:%j', pics, redisPrintTaskKeyPre + mid);
   //确认图片是否存在
   db.findOne(picTable, {
     'url': pics[0]
@@ -353,13 +382,20 @@ var addPrintPics = function(cypics, mid, callback) {
               callback(vlog.ee(err, 'addPrintPics.addUserPoint'));
               return;
             }
-            //添加到redis队列
-            db.pushToCache(redisPrintTaskKeyPre + ':' + mid, pics, function(err, re) {
+
+            checkPicSize(picSize, pics, function(err) {
               if (err) {
-                callback(vlog.ee(err, 'addPrintPics:pushToCache:' + cypics));
-                return;
+                return callback(vlog.ee(err, 'addPrintPics:checkPicSize', cypics));
               }
-              callback(null, re);
+              //添加到redis队列
+              db.pushToCache(redisPrintTaskKeyPre + mid, pics, function(err, re) {
+                if (err) {
+                  callback(vlog.ee(err, 'addPrintPics:pushToCache:' + cypics));
+                  return;
+                }
+                callback(null, re);
+              });
+
             });
           });
         } else {
@@ -373,7 +409,7 @@ var addPrintPics = function(cypics, mid, callback) {
 };
 
 var getPrintPic = function(mid, callback) {
-  db.popFromCache(redisPrintTaskKeyPre + ':' + mid, function(err, re) {
+  db.popFromCache(redisPrintTaskKeyPre + mid, function(err, re) {
     if (err) {
       callback(vlog.ee(err, 'popFromCache'));
       return;
@@ -392,7 +428,7 @@ var getPrintPic = function(mid, callback) {
       if (pic) {
         callback(null, re);
       } else {
-        db.rPushToCache(redisPrintTaskKeyPre + ':' + mid, re, function(err, re) {
+        db.rPushToCache(redisPrintTaskKeyPre + mid, re, function(err, re) {
           if (err) {
             callback(vlog.ee(err, 'getPrintPic:pushToCache:' + re));
             return;
@@ -420,15 +456,15 @@ exports.subUser = subUser;
 exports.unSubUser = unSubUser;
 
 
-// var pp = 'http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6229194685600710599.jpg-http://kf.loyoo.co/wxpics/og7V4wHtmgMSb6fTrUQ4xJheErBo/tb__6229194591111430077.jpg';
-// var mm = 23;
-// addPrintPics(pp,mm,function(err, re) {
-//   if (err) {
-//     vlog.eo(err); return;
-//   }
-//   vlog.log('add re:%j',re);
+var pp = 'http://kf.loyoo.co/wxpics/ow_7Ow7HLnQjzGg-noOKmtmRNUhI/tb__6237334365885400706.jpg###http://kf.loyoo.co/wxpics/ow_7Ow7HLnQjzGg-noOKmtmRNUhI/tb__6237334365885400707.jpg###';
+var mm = 31;
+addPrintPics(pp,mm,6,function(err, re) {
+  if (err) {
+    vlog.eo(err); return;
+  }
+  vlog.log('addPrintPics re:%j',re);
 
-// });
+});
 // getPrintPic(mm, function(err, re) {
 //   if (err) {
 //     vlog.eo(err);
