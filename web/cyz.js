@@ -36,7 +36,7 @@ router.post('*', function(req, resp, next) {
     resp.status(403).send(error.json('params', '参数错误,请返回重试.'));
     return;
   }
-  var picSize = checkPicSize(req.body.picSize);
+  var picSize = checkPicSize(req.body.mid);
   //提交到redis等待处理
   db.addPrintPics(req.body.cypics, req.body.mid, picSize, function(err) {
     if (err) {

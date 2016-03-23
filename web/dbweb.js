@@ -456,15 +456,15 @@ exports.subUser = subUser;
 exports.unSubUser = unSubUser;
 
 
-var pp = 'http://kf.loyoo.co/wxpics/ow_7Ow7HLnQjzGg-noOKmtmRNUhI/tb__6237334365885400706.jpg###http://kf.loyoo.co/wxpics/ow_7Ow7HLnQjzGg-noOKmtmRNUhI/tb__6237334365885400707.jpg###';
-var mm = 31;
-addPrintPics(pp,mm,6,function(err, re) {
-  if (err) {
-    vlog.eo(err); return;
-  }
-  vlog.log('addPrintPics re:%j',re);
+// var pp = 'http://kf.loyoo.co/wxpics/ow_7Ow7HLnQjzGg-noOKmtmRNUhI/tb__6237334365885400706.jpg###http://kf.loyoo.co/wxpics/ow_7Ow7HLnQjzGg-noOKmtmRNUhI/tb__6237334365885400707.jpg###';
+// var mm = 31;
+// addPrintPics(pp,mm,6,function(err, re) {
+//   if (err) {
+//     vlog.eo(err); return;
+//   }
+//   vlog.log('addPrintPics re:%j',re);
 
-});
+// });
 // getPrintPic(mm, function(err, re) {
 //   if (err) {
 //     vlog.eo(err);

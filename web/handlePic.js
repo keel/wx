@@ -85,7 +85,7 @@ var makePicSize = function(onePicUrl, picSize, callback) {
     return callback(vlog.ee(null, 'picSize err', picSize, onePicUrl));
   }
   // 解析picUrl http://kf.loyoo.co/wxpics/ow_7Ow4deFA9n0fONl5fy1b1hl2M/tb__6237383182483689518.jpg
-  var urlStr = onePicUrl.replace(/http:\/\//, '');
+  var urlStr = onePicUrl.replace('http:\/\/', '');
   var urlArr = urlStr.split('\/');
   if (urlArr.length !== 4) {
     return callback(vlog.ee(null, 'onePicUrl err', onePicUrl));
