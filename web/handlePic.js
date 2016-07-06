@@ -10,8 +10,8 @@ var download = require('./../lib/download');
 var fs = require('fs');
 var db = require('./dbweb');
 var gm = require('gm');
-// var picDirPre = '/data/apps/pics/';
-var picDirPre = '/Users/keel/dev/pics/';
+var picDirPre = '/data/apps/pics/';
+// var picDirPre = '/Users/keel/dev/pics/';
 var picDownPre = 'http://kf.loyoo.co/wxpics/';
 var albumUrl = 'http://kf.loyoo.co/wxt/albumre';
 var reTxt = '<a href="' + albumUrl + '">您已成功上传一张照片至相册,点击本消息查看.</a>';
@@ -23,13 +23,13 @@ var printW = 1648;
 var printH = 2354;
 var printDpi = 96;
 
-//w4 表示4寸照片的宽度
+//w4 表示4寸照片的宽度,w6表示6寸
 var picSizeMap = {
   'w4': 1648,
   'h4': 2354,
   'd4': 96,
-  'w6': 2354,
-  'h6': 3296,
+  'w6': 2460,
+  'h6': 3666,
   'd6': 96
 };
 

@@ -52,7 +52,7 @@ var menu = {
 var defaultReply = '发送图片给我,就可以直接冲印成实体照片! 不信试试?!';
 
 var init = function(callback) {
-  var configArr = ['wxSecret', 'wxAppid', 'wxEncodingAESKey', 'wxToken'];
+  var configArr = ['wxSecret-t', 'wxAppid-t', 'wxEncodingAESKey-t', 'wxToken-t'];
   cache.readConfig(configArr, function(err, re) {
     if (err) {
       return vlog.eo(err, 'init:readConfig');
