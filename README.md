@@ -1,1 +1,1 @@
-# wechat test project
+# 微信服务号
