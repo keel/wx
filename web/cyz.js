@@ -16,7 +16,11 @@ router.use(bodyParser.urlencoded({
 var midSize = {
   '31':6,
   '32':6,
-  '33':6
+  '33':6,
+  '331':'6a',
+  '332':'6a',
+  '333':'6a',
+  '334':'6a'
 };
 var checkPicSize = function(mid) {
   if (!mid) {
